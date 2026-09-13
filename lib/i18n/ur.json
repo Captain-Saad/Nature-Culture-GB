@@ -230,11 +230,20 @@
       "title": "آپ کے سفر کا تخمینہ",
       "breakdown": "لاگت کی تفصیل",
       "hotel": "ہوٹل",
+      "hotelDetail": "{nights} راتیں · {rooms} کمرے",
       "transport": "ٹرانسپورٹ",
+      "transportDetail": "{vehicles} گاڑیاں · {days} دن",
+      "transportDetailShared": "{travelers} مسافر · {days} دن",
       "food": "خوراک",
       "activitiesCost": "سرگرمیاں",
       "entryFees": "داخلہ فیس",
-      "total": "کل تخمینی لاگت"
+      "total": "کل تخمینی لاگت",
+      "yourBudget": "آپ کا بجٹ",
+      "withinBudget": "آپ کے بجٹ سے {amount} روپے کم",
+      "overBudget": "آپ کے بجٹ سے {amount} روپے زیادہ",
+      "includedDestinations": "شامل منزلیں",
+      "includedActivities": "شامل سرگرمیاں",
+      "noneSelectedYet": "ابھی کوئی منتخب نہیں"
     }
   },
   "weather": {

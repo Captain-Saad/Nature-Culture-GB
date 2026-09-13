@@ -230,11 +230,20 @@
       "title": "Your Trip Estimate",
       "breakdown": "Cost Breakdown",
       "hotel": "Hotel",
+      "hotelDetail": "{nights} nights · {rooms} room(s)",
       "transport": "Transport",
+      "transportDetail": "{vehicles} vehicle(s) · {days} days",
+      "transportDetailShared": "{travelers} traveler(s) · {days} days",
       "food": "Food",
       "activitiesCost": "Activities",
       "entryFees": "Entry Fees",
-      "total": "Total Estimated Cost"
+      "total": "Total Estimated Cost",
+      "yourBudget": "Your Budget",
+      "withinBudget": "PKR {amount} under your budget",
+      "overBudget": "PKR {amount} over your budget",
+      "includedDestinations": "Destinations included",
+      "includedActivities": "Activities included",
+      "noneSelectedYet": "None selected yet"
     }
   },
   "weather": {

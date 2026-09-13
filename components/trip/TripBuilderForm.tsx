@@ -8,15 +8,7 @@ import { pricingTable, HotelCategoryKey, TransportKey } from "@/lib/mock-data/pr
 import CostCalculator from "./CostCalculator";
 
 const STARTING_CITIES = ["Islamabad", "Lahore", "Karachi", "Peshawar"];
-const ACTIVITY_OPTIONS = [
-  "Sightseeing",
-  "Trekking",
-  "Camping",
-  "Boating",
-  "Photography",
-  "Cultural Tours",
-  "Wildlife Spotting",
-];
+const ACTIVITY_OPTIONS = Object.keys(pricingTable.activityCostPKR);
 
 const STEP_KEYS = [
   "origin",
@@ -277,7 +269,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
       </div>
 
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <CostCalculator trip={trip} />
+        <CostCalculator trip={trip} destinations={destinations} />
       </div>
     </div>
   );
