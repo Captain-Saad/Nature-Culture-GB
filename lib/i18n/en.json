@@ -262,7 +262,9 @@
     "open": "Open",
     "closed": "Closed",
     "restricted": "Restricted",
-    "source": "Source"
+    "source": "Source",
+    "mockDataTitle": "Illustrative data",
+    "mockDataBody": "These reports are placeholder/mock content for now. Live route and situation updates will replace them in a later phase."
   },
   "reviews": {
     "pageTitle": "Reviews",
