@@ -192,6 +192,7 @@
     "pageTitle": "ٹور پیکجز",
     "pageSubtitle": "گلگت بلتستان میں منتخب کردہ سفری منصوبے",
     "detail": {
+      "overview": "جائزہ",
       "itinerary": "روز بروز روزنامچہ",
       "included": "کیا شامل ہے",
       "day": "دن {number}"

@@ -192,6 +192,7 @@
     "pageTitle": "Tour Packages",
     "pageSubtitle": "Curated itineraries across Gilgit-Baltistan",
     "detail": {
+      "overview": "Overview",
       "itinerary": "Day-by-Day Itinerary",
       "included": "What's Included",
       "day": "Day {number}"

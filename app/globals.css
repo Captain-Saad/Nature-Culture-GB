@@ -59,3 +59,26 @@ h4,
   border-radius: 1rem;
   z-index: 0;
 }
+
+@keyframes logo-loop {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-logo-loop {
+  animation: logo-loop 30s linear infinite;
+}
+
+[dir="rtl"] .animate-logo-loop {
+  animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-logo-loop {
+    animation: none;
+  }
+}
