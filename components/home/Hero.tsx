@@ -71,7 +71,7 @@ export default function Hero() {
         <div data-hero-fade className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <GlareHover className="rounded-full">
             <Link
-              href="/destinations"
+              href="/#explore"
               className="block rounded-full border-2 border-cream-100 px-6 py-3 text-sm font-bold text-cream-50 transition-colors hover:bg-cream-50/10"
             >
               {t("ctaExplore")}

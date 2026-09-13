@@ -5,8 +5,10 @@ export interface NavLink {
 
 /**
  * "Explore GB" has no standalone route in Phase 1 — the spec lists it
- * alongside the Home page's "Explore GB" section, so it anchors there
- * instead of duplicating the Destinations page.
+ * as a distinct nav item alongside the Home page's "Explore GB"
+ * section (the region grid), so it anchors there. "Destinations"
+ * points at the actual filterable grid page. The Hero's own
+ * "Explore GB" CTA uses the same anchor for consistency.
  */
 export const navLinks: NavLink[] = [
   { href: "/", labelKey: "home" },

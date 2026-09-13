@@ -48,6 +48,11 @@ export default function Footer() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link href="/mountains" className="hover:text-orange-300">
+                {t("mountains.pageTitle")}
+              </Link>
+            </li>
           </ul>
         </div>
 
