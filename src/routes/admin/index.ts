@@ -25,6 +25,15 @@ router.use("/", authRouter);
 // Everything registered from here down requires a valid admin JWT.
 router.use(requireAdminAuth);
 
+// GET /admin/me -- lightweight session-verification endpoint. The
+// frontend calls this (not just checking cookie presence) to confirm a
+// token is genuinely still valid before rendering a protected page.
+router.get("/me", (req, res) => {
+  // Matches the { id, email, role } shape POST /admin/login already
+  // returns as `user`, rather than the JWT payload's raw `sub` field name.
+  res.json({ id: req.admin!.sub, email: req.admin!.email, role: req.admin!.role });
+});
+
 router.use(
   "/destinations",
   createAdminCrudRouter({
