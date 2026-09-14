@@ -547,7 +547,16 @@ interface HotelSeed {
   category: string;
   estimatedPricePerNightPKR: number;
   facilities: string[];
-  roomTypes: { type: string; capacity: number; estimatedPricePKR: number }[];
+  roomTypes: {
+    type: string;
+    capacity: number;
+    estimatedPricePKR: number;
+    images: string[];
+    bedConfig: string;
+    maxOccupancy: { adults: number; children: number };
+    sizeSqFt?: number;
+    facilities: string[];
+  }[];
   cancellationPolicy: string;
   lat: number;
   lng: number;
@@ -566,8 +575,26 @@ const hotels: HotelSeed[] = [
     estimatedPricePerNightPKR: 12000,
     facilities: ["Free Wi-Fi", "Parking", "Restaurant", "Room Service"],
     roomTypes: [
-      { type: "Standard Double", capacity: 2, estimatedPricePKR: 12000 },
-      { type: "Family Room", capacity: 4, estimatedPricePKR: 18000 },
+      {
+        type: "Standard Double",
+        capacity: 3,
+        estimatedPricePKR: 12000,
+        images: img("indus-motel-standard-double", 3),
+        bedConfig: "1 Queen Bed",
+        maxOccupancy: { adults: 2, children: 1 },
+        sizeSqFt: 180,
+        facilities: ["Air Conditioning", "Attached Bathroom", "Free Wi-Fi", "TV"],
+      },
+      {
+        type: "Family Room",
+        capacity: 6,
+        estimatedPricePKR: 18000,
+        images: img("indus-motel-family-room", 3),
+        bedConfig: "2 Double Beds",
+        maxOccupancy: { adults: 4, children: 2 },
+        sizeSqFt: 280,
+        facilities: ["Air Conditioning", "Attached Bathroom", "Free Wi-Fi", "TV", "Extra Bedding"],
+      },
     ],
     cancellationPolicy: "Cancellation policy details will be provided by the hotel at time of booking.",
     lat: 35.2965,
@@ -585,8 +612,33 @@ const hotels: HotelSeed[] = [
     estimatedPricePerNightPKR: 35000,
     facilities: ["Free Wi-Fi", "Lake View", "Restaurant", "Boating", "Parking"],
     roomTypes: [
-      { type: "Deluxe Cottage", capacity: 2, estimatedPricePKR: 35000 },
-      { type: "Lake View Suite", capacity: 3, estimatedPricePKR: 48000 },
+      {
+        type: "Deluxe Cottage",
+        capacity: 3,
+        estimatedPricePKR: 35000,
+        images: img("shangrila-deluxe-cottage", 3),
+        bedConfig: "1 King Bed",
+        maxOccupancy: { adults: 2, children: 1 },
+        sizeSqFt: 320,
+        facilities: ["Lake View", "Air Conditioning", "Attached Bathroom", "Mini Fridge", "Free Wi-Fi"],
+      },
+      {
+        type: "Lake View Suite",
+        capacity: 5,
+        estimatedPricePKR: 48000,
+        images: img("shangrila-lake-view-suite", 3),
+        bedConfig: "1 King Bed + 1 Sofa Bed",
+        maxOccupancy: { adults: 3, children: 2 },
+        sizeSqFt: 450,
+        facilities: [
+          "Lake View",
+          "Air Conditioning",
+          "Private Balcony",
+          "Attached Bathroom",
+          "Mini Fridge",
+          "Free Wi-Fi",
+        ],
+      },
     ],
     cancellationPolicy: "Cancellation policy details will be provided by the hotel at time of booking.",
     lat: 35.3861,
@@ -604,7 +656,18 @@ const hotels: HotelSeed[] = [
     category: "Luxury",
     estimatedPricePerNightPKR: 32000,
     facilities: ["Heritage Building", "Free Wi-Fi", "Restaurant", "Garden"],
-    roomTypes: [{ type: "Heritage Room", capacity: 2, estimatedPricePKR: 32000 }],
+    roomTypes: [
+      {
+        type: "Heritage Room",
+        capacity: 2,
+        estimatedPricePKR: 32000,
+        images: img("shigar-fort-heritage-room", 3),
+        bedConfig: "1 Queen Bed",
+        maxOccupancy: { adults: 2, children: 0 },
+        sizeSqFt: 240,
+        facilities: ["Heritage Decor", "Attached Bathroom", "Garden View", "Free Wi-Fi"],
+      },
+    ],
     cancellationPolicy: "Cancellation policy details will be provided by the hotel at time of booking.",
     lat: 35.4225,
     lng: 75.7439,
@@ -621,8 +684,26 @@ const hotels: HotelSeed[] = [
     estimatedPricePerNightPKR: 30000,
     facilities: ["Mountain View", "Free Wi-Fi", "Restaurant", "Parking"],
     roomTypes: [
-      { type: "Deluxe Room", capacity: 2, estimatedPricePKR: 30000 },
-      { type: "Suite", capacity: 3, estimatedPricePKR: 42000 },
+      {
+        type: "Deluxe Room",
+        capacity: 3,
+        estimatedPricePKR: 30000,
+        images: img("hunza-serena-deluxe-room", 3),
+        bedConfig: "1 King Bed",
+        maxOccupancy: { adults: 2, children: 1 },
+        sizeSqFt: 260,
+        facilities: ["Mountain View", "Air Conditioning", "Attached Bathroom", "Free Wi-Fi", "TV"],
+      },
+      {
+        type: "Suite",
+        capacity: 5,
+        estimatedPricePKR: 42000,
+        images: img("hunza-serena-suite", 3),
+        bedConfig: "1 King Bed + 1 Sofa Bed",
+        maxOccupancy: { adults: 3, children: 2 },
+        sizeSqFt: 400,
+        facilities: ["Mountain View", "Air Conditioning", "Sitting Area", "Attached Bathroom", "Free Wi-Fi", "TV"],
+      },
     ],
     cancellationPolicy: "Cancellation policy details will be provided by the hotel at time of booking.",
     lat: 36.3167,
@@ -639,7 +720,18 @@ const hotels: HotelSeed[] = [
     category: "Budget",
     estimatedPricePerNightPKR: 7000,
     facilities: ["Free Wi-Fi", "Restaurant", "Glacier View"],
-    roomTypes: [{ type: "Standard Room", capacity: 2, estimatedPricePKR: 7000 }],
+    roomTypes: [
+      {
+        type: "Standard Room",
+        capacity: 3,
+        estimatedPricePKR: 7000,
+        images: img("passu-inn-standard-room", 3),
+        bedConfig: "2 Twin Beds",
+        maxOccupancy: { adults: 2, children: 1 },
+        sizeSqFt: 160,
+        facilities: ["Glacier View", "Attached Bathroom", "Free Wi-Fi"],
+      },
+    ],
     cancellationPolicy: "Cancellation policy details will be provided by the hotel at time of booking.",
     lat: 36.4667,
     lng: 74.8833,
@@ -655,7 +747,18 @@ const hotels: HotelSeed[] = [
     category: "Mid-Range",
     estimatedPricePerNightPKR: 10000,
     facilities: ["Free Wi-Fi", "River View", "Restaurant", "Parking"],
-    roomTypes: [{ type: "Standard Double", capacity: 2, estimatedPricePKR: 10000 }],
+    roomTypes: [
+      {
+        type: "Standard Double",
+        capacity: 3,
+        estimatedPricePKR: 10000,
+        images: img("gilgit-riverside-standard-double", 3),
+        bedConfig: "1 Queen Bed",
+        maxOccupancy: { adults: 2, children: 1 },
+        sizeSqFt: 190,
+        facilities: ["River View", "Air Conditioning", "Attached Bathroom", "Free Wi-Fi", "TV"],
+      },
+    ],
     cancellationPolicy: "Cancellation policy details will be provided by the hotel at time of booking.",
     lat: 35.9208,
     lng: 74.3144,
@@ -671,7 +774,18 @@ const hotels: HotelSeed[] = [
     category: "Budget",
     estimatedPricePerNightPKR: 8000,
     facilities: ["Nanga Parbat View", "Bonfire", "Meals Included"],
-    roomTypes: [{ type: "Wooden Cottage", capacity: 2, estimatedPricePKR: 8000 }],
+    roomTypes: [
+      {
+        type: "Wooden Cottage",
+        capacity: 3,
+        estimatedPricePKR: 8000,
+        images: img("raikot-cottages-wooden-cottage", 3),
+        bedConfig: "1 Double Bed",
+        maxOccupancy: { adults: 2, children: 1 },
+        sizeSqFt: 150,
+        facilities: ["Nanga Parbat View", "Shared Bathroom", "Bonfire Access"],
+      },
+    ],
     cancellationPolicy: "Cancellation policy details will be provided by the hotel at time of booking.",
     lat: 35.3833,
     lng: 74.5833,
@@ -688,7 +802,18 @@ const hotels: HotelSeed[] = [
     category: "Luxury",
     estimatedPricePerNightPKR: 28000,
     facilities: ["Heritage Building", "Free Wi-Fi", "Restaurant", "Garden"],
-    roomTypes: [{ type: "Palace Room", capacity: 2, estimatedPricePKR: 28000 }],
+    roomTypes: [
+      {
+        type: "Palace Room",
+        capacity: 3,
+        estimatedPricePKR: 28000,
+        images: img("khaplu-palace-room", 3),
+        bedConfig: "1 King Bed",
+        maxOccupancy: { adults: 2, children: 1 },
+        sizeSqFt: 300,
+        facilities: ["Heritage Decor", "Attached Bathroom", "Garden View", "Free Wi-Fi"],
+      },
+    ],
     cancellationPolicy: "Cancellation policy details will be provided by the hotel at time of booking.",
     lat: 35.1667,
     lng: 76.3333,

@@ -5,6 +5,17 @@ const roomTypeSchema = z.object({
   type: z.string().trim().min(1).max(100),
   capacity: z.coerce.number().int().positive(),
   estimatedPricePKR: z.coerce.number().int().nonnegative(),
+  // Room-*type* detail, not per-instance inventory -- see the comment on
+  // HotelRoom in frontend/lib/types.ts for why individual rooms aren't
+  // modeled here.
+  images: z.array(z.string().url()),
+  bedConfig: z.string().trim().min(1).max(200),
+  maxOccupancy: z.object({
+    adults: z.coerce.number().int().nonnegative(),
+    children: z.coerce.number().int().nonnegative(),
+  }),
+  sizeSqFt: z.coerce.number().int().positive().optional(),
+  facilities: z.array(z.string()),
 });
 
 const hotelFields = {

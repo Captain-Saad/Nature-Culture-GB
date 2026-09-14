@@ -4,6 +4,11 @@ interface RoomType {
   type: string;
   capacity: number;
   estimatedPricePKR: number;
+  images: string[];
+  bedConfig: string;
+  maxOccupancy: { adults: number; children: number };
+  sizeSqFt?: number;
+  facilities: string[];
 }
 
 function toDateLabel(date: Date) {
