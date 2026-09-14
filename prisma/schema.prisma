@@ -273,6 +273,10 @@ model ContactMessage {
   id      String @id @default(cuid())
   name    String
   email   String
+  // Not in backend_prompt's field list but present on the frontend's
+  // ContactForm; added to satisfy that contract exactly (see Phase 3's
+  // "frontend contract wins" precedent in this file's header comment).
+  subject String?
   message String @db.Text
 
   status    ContactStatus @default(NEW)
