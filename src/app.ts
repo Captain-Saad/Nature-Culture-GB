@@ -11,6 +11,9 @@ import tripLeadsRouter from "./routes/tripLeads";
 import contactRouter from "./routes/contact";
 import reviewsRouter from "./routes/reviews";
 import adminRouter from "./routes/admin";
+import weatherRouter from "./routes/weather";
+import flightsRouter from "./routes/flights";
+import situationReportsRouter from "./routes/situationReports";
 
 const corsOrigins = (process.env.CORS_ORIGIN ?? "http://localhost:3000")
   .split(",")
@@ -36,6 +39,9 @@ app.use("/trip-leads", tripLeadsRouter);
 app.use("/contact", contactRouter);
 app.use("/reviews", reviewsRouter);
 app.use("/admin", adminRouter);
+app.use("/weather", weatherRouter);
+app.use("/flights", flightsRouter);
+app.use("/situation-reports", situationReportsRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
