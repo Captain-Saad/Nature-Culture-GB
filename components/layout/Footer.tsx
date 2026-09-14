@@ -70,11 +70,6 @@ export default function Footer() {
             <li>
               <Link href="/reviews" className="hover:text-orange-300">{t("reviews.pageTitle")}</Link>
             </li>
-            <li>
-              <Link href="/admin/login" className="text-cream-400 hover:text-orange-300">
-                {t("admin.loginTitle")}
-              </Link>
-            </li>
           </ul>
         </div>
 

@@ -320,10 +320,32 @@
   "admin": {
     "loginTitle": "Admin Login",
     "loginSubtitle": "Staff access only",
-    "username": "Username",
+    "email": "Email",
     "password": "Password",
     "signIn": "Sign In",
-    "placeholderNotice": "This login form is a UI placeholder only. No authentication is wired up yet."
+    "signingIn": "Signing in…",
+    "invalidCredentials": "Invalid email or password.",
+    "loginError": "Something went wrong. Please try again.",
+    "dashboardTitle": "Admin Dashboard",
+    "dashboardSubtitle": "Manage Nature & Culture GB's content and leads.",
+    "backToDashboard": "Back to Dashboard",
+    "logout": "Log Out",
+    "loggedInAs": "Signed in as {email}",
+    "itemCount": "{count, plural, one {# item} other {# items}}",
+    "roomCount": "{count, plural, one {# room type} other {# room types}} across {hotels, plural, one {# hotel} other {# hotels}}",
+    "crudComingSoon": "Full editing tools for this section are coming soon — this page confirms your admin session reaches the backend correctly.",
+    "notImplemented": "This section has no backend data model yet — nothing to manage here until it's built.",
+    "sections": {
+      "destinations": "Destinations",
+      "hotels": "Hotels",
+      "rooms": "Rooms",
+      "mountains": "Mountains",
+      "packages": "Packages",
+      "situationReports": "Travel Updates",
+      "siteSettings": "Site Settings",
+      "leads": "Trip Leads",
+      "reviews": "Reviews"
+    }
   },
   "booking": {
     "modalTitle": "Book with Nature & Culture GB",

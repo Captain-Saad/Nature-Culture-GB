@@ -1,31 +1,67 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 
-/**
- * UI PLACEHOLDER ONLY — no authentication is wired up yet.
- * Submitting this form does nothing beyond preventing the default
- * page reload. Real auth arrives with the backend phases.
- */
 export default function AdminLoginForm() {
   const t = useTranslations("admin");
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        setError(res.status === 401 ? t("invalidCredentials") : t("loginError"));
+        setSubmitting(false);
+        return;
+      }
+
+      router.push("/admin");
+      router.refresh();
+    } catch {
+      setError(t("loginError"));
+      setSubmitting(false);
+    }
   }
 
   return (
     <div className="mx-auto max-w-sm">
       <form onSubmit={handleSubmit} className="rounded-card bg-white p-6 shadow-card">
+        {error && (
+          <p
+            role="alert"
+            className="mb-4 rounded-lg bg-orange-50 px-3 py-2 text-sm font-semibold text-orange-800"
+          >
+            {error}
+          </p>
+        )}
+
         <div>
-          <label htmlFor="admin-username" className="text-sm font-semibold text-forest-800">
-            {t("username")}
+          <label htmlFor="admin-email" className="text-sm font-semibold text-forest-800">
+            {t("email")}
           </label>
           <input
-            id="admin-username"
-            name="username"
-            type="text"
-            autoComplete="off"
+            id="admin-email"
+            name="email"
+            type="email"
+            required
+            autoComplete="username"
             className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
           />
         </div>
@@ -37,21 +73,19 @@ export default function AdminLoginForm() {
             id="admin-password"
             name="password"
             type="password"
-            autoComplete="off"
+            required
+            autoComplete="current-password"
             className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
           />
         </div>
         <button
           type="submit"
-          className="mt-6 w-full rounded-full bg-forest-700 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-forest-800"
+          disabled={submitting}
+          className="mt-6 w-full rounded-full bg-forest-700 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-forest-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {t("signIn")}
+          {submitting ? t("signingIn") : t("signIn")}
         </button>
       </form>
-
-      <p className="mt-4 rounded-lg border border-dashed border-cream-400 bg-cream-100 p-3 text-center text-xs text-forest-500">
-        {t("placeholderNotice")}
-      </p>
     </div>
   );
 }
