@@ -1,0 +1,308 @@
+// Nature & Culture GB — backend data model.
+//
+// Field names generally follow backend_prompt.md's schema section. Where
+// that schema is silent or conflicts with the frontend's existing mock
+// data contract (lib/mock-data/ in /frontend), the frontend contract wins
+// — this file's API layer (src/serializers) maps DB fields to the exact
+// JSON shape the frontend already expects. Deviations are called out
+// inline below.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Region {
+  Skardu
+  Hunza
+  Gilgit
+  Astore
+  Ghizer
+  Nagar
+  Diamer
+  Ghanche
+  Shigar
+  Kharmang
+}
+
+enum Difficulty {
+  Easy
+  Moderate
+  Challenging
+  Extreme
+}
+
+// HotelCategory, PackageCategory and Transport are plain validated strings
+// (see src/lib/enums.ts), not Prisma enums: Prisma's @map on an enum value
+// only changes the DB storage label, not the runtime JS value the client
+// returns — so HotelCategory.MidRange would serialize as "MidRange", not
+// the frontend contract's "Mid-Range". A String column avoids that
+// mismatch entirely while Zod still enforces the allowed values at the API
+// boundary.
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TripLeadStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+enum ContactStatus {
+  NEW
+  READ
+}
+
+// Frontend's SituationStatus is "Open" | "Closed" | "Restricted" (see
+// frontend/lib/types.ts) — kept in that casing here since Phase 7's read
+// endpoint must match it exactly, even though this table isn't read by
+// any endpoint until then.
+enum SituationStatus {
+  Open
+  Closed
+  Restricted
+}
+
+model Destination {
+  id       String @id @default(cuid())
+  slug     String @unique
+  name     String
+  region   Region
+  images   String[]
+
+  shortDescription String
+  // backend_prompt calls this "longDescription"; the frontend contract's
+  // field is "description" — serializer renames longDescription -> description.
+  longDescription  String @db.Text
+
+  bestTimeToVisit String
+
+  // backend_prompt's "estimatedDurationDays" (a number) can't carry text
+  // like "Half day" or "2-3 days", which real GB itineraries need and the
+  // frontend's "estimatedDuration" field expects verbatim. Both are kept:
+  // Days is a best-effort numeric approximation, Label is what the API
+  // actually returns as estimatedDuration.
+  estimatedDurationDays   Int
+  estimatedDurationLabel  String
+
+  activities String[]
+  difficulty Difficulty
+
+  // backend_prompt's single "approxCostPKR" split into a min/max pair to
+  // match the frontend's { min, max } contract; serializer recombines them.
+  approxCostMinPKR Int
+  approxCostMaxPKR Int
+
+  // Not listed in backend_prompt's field list but required by the
+  // relationships note ("simple id array is fine at this scale") and by
+  // the frontend contract directly.
+  nearbyHotelIds      String[]
+  nearbyAttractionIds String[]
+
+  lat Float
+  lng Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviews Review[]
+
+  @@index([region])
+}
+
+model Hotel {
+  id     String @id @default(cuid())
+  slug   String @unique
+  name   String
+  // backend_prompt calls this "region"; frontend's Hotel contract calls
+  // the same concept "city" — serializer renames region -> city.
+  region Region
+  images String[]
+
+  // Editorial-only for now; the frontend Hotel contract has no generic
+  // description field, so this is stored but not included in the public
+  // response until an admin dashboard (Phase 6) wants it.
+  description String? @db.Text
+
+  starRating Int
+
+  // "Budget" | "Mid-Range" | "Luxury" — validated by Zod (src/lib/enums.ts)
+  category String
+
+  // backend_prompt: "estimatedPricePerNightPKR" -> frontend: "estimatedPricePKR"
+  estimatedPricePerNightPKR Int
+  // backend_prompt: "priceLastUpdated" -> frontend: "lastUpdated"
+  priceLastUpdated          DateTime
+
+  facilities String[]
+
+  // Matches the frontend's rooms[] shape directly: { type, capacity, estimatedPricePKR }[]
+  roomTypes Json
+
+  cancellationPolicy String @db.Text
+
+  lat Float
+  lng Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviews Review[]
+
+  @@index([region])
+  @@index([category])
+}
+
+model Mountain {
+  id    String @id @default(cuid())
+  slug  String @unique
+  name  String
+
+  heightMeters Int
+  range        String
+  difficulty   Difficulty
+  images       String[]
+  description  String @db.Text
+
+  // Verified but not currently rendered by the frontend; kept for
+  // editorial completeness / future admin use.
+  firstAscent String?
+  bestSeason  String?
+
+  // Required by the frontend's Mountain contract but absent from
+  // backend_prompt's literal field list — added to satisfy it exactly.
+  worldRank   Int
+  nearestTown String
+  lat         Float
+  lng         Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Package {
+  id    String @id @default(cuid())
+  slug  String @unique
+  title String
+
+  // "Adventure" | "Honeymoon" | "Family" | "Budget Backpacker" | "Luxury"
+  category     String
+  durationDays Int
+  images      String[]
+
+  // backend_prompt's single "estimatedPricePKR" split into min/max to
+  // match the frontend's { min, max } contract.
+  estimatedPriceMinPKR Int
+  estimatedPriceMaxPKR Int
+  // backend_prompt: "priceLastUpdated" -> frontend: "lastUpdated"
+  priceLastUpdated     DateTime
+
+  highlights String[]
+
+  // Stored pre-shaped to match the frontend's ItineraryDay[] exactly:
+  // { day, title, description, meals?, overnightAt? }[] — deviates from
+  // backend_prompt's { day, title, activities[] } sketch because the
+  // frontend contract is the priority per the build instructions.
+  itinerary Json
+
+  // Not in backend_prompt's field list but present on the frontend's
+  // TourPackage contract; added to satisfy it exactly.
+  included String[]
+  excluded String[]
+  regions  Region[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id    String  @id @default(cuid())
+  name  String
+  email String?
+
+  destinationId String?
+  destination   Destination? @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+
+  hotelId String?
+  hotel   Hotel?  @relation(fields: [hotelId], references: [id], onDelete: SetNull)
+
+  rating   Int
+  text     String @db.Text
+  photoUrl String?
+
+  status    ReviewStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+
+  @@index([status])
+}
+
+model TripLead {
+  id     String @id @default(cuid())
+  name   String
+  // Phone or email, whichever the lead gave — kept as one free-text field
+  // per backend_prompt's "contact" (singular).
+  contact String
+
+  startingCity String
+  // Matches the frontend TripBuilderForm's TripState.destinationIds field
+  // name directly, so mapping the POST payload in Phase 4 is a pass-through.
+  destinationIds String[]
+  days           Int
+  travelers      Int
+  budgetPKR      Int?
+  // "Budget" | "Mid-Range" | "Luxury" — validated by Zod (src/lib/enums.ts)
+  hotelCategory  String?
+  // "Shared" | "Private" | "4x4 Jeep" — validated by Zod (src/lib/enums.ts)
+  transport      String?
+  activities     String[]
+
+  status    TripLeadStatus @default(NEW)
+  createdAt DateTime       @default(now())
+
+  @@index([status])
+}
+
+model ContactMessage {
+  id      String @id @default(cuid())
+  name    String
+  email   String
+  message String @db.Text
+
+  status    ContactStatus @default(NEW)
+  createdAt DateTime      @default(now())
+
+  @@index([status])
+}
+
+model SituationReport {
+  id      String @id @default(cuid())
+  title   String
+  region  Region
+  status  SituationStatus
+  details String @db.Text
+  source  String
+
+  reportedAt DateTime
+  createdBy  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([region])
+}
+
+model AdminUser {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+  role         String @default("ADMIN")
+
+  createdAt DateTime @default(now())
+}
