@@ -34,6 +34,19 @@ export interface Destination {
 
 export type HotelCategory = "Budget" | "Mid-Range" | "Luxury";
 
+export interface HotelRoom {
+  type: string;
+  capacity: number;
+  estimatedPricePKR: number;
+  // Room-*type* detail, not per-instance inventory — a lead-gen site
+  // with no real booking system has no need to model individual rooms.
+  images: string[];
+  bedConfig: string;
+  maxOccupancy: { adults: number; children: number };
+  sizeSqFt?: number;
+  facilities: string[];
+}
+
 export interface Hotel {
   id: string;
   slug: string;
@@ -44,11 +57,7 @@ export interface Hotel {
   category: HotelCategory;
   estimatedPricePKR: number;
   facilities: string[];
-  rooms: {
-    type: string;
-    capacity: number;
-    estimatedPricePKR: number;
-  }[];
+  rooms: HotelRoom[];
   cancellationPolicy: string;
   lat: number;
   lng: number;

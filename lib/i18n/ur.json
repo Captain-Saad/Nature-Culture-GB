@@ -185,7 +185,15 @@
       "rooms": "کمرے",
       "facilities": "سہولیات",
       "cancellationPolicy": "منسوخی کی پالیسی",
-      "cancellationPlaceholder": "منسوخی کی پالیسی کی تفصیلات بکنگ کے وقت ہوٹل کی جانب سے فراہم کی جائیں گی۔"
+      "cancellationPlaceholder": "منسوخی کی پالیسی کی تفصیلات بکنگ کے وقت ہوٹل کی جانب سے فراہم کی جائیں گی۔",
+      "upToGuests": "زیادہ سے زیادہ {count} مہمان",
+      "viewRoomDetails": "کمرے کی تفصیلات دیکھیں",
+      "bedConfiguration": "بستر کی ترتیب",
+      "maxOccupancy": "زیادہ سے زیادہ گنجائش",
+      "adults": "بالغ افراد",
+      "children": "بچے",
+      "roomSize": "کمرے کا رقبہ",
+      "sqft": "مربع فٹ"
     }
   },
   "packages": {

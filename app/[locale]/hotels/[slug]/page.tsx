@@ -7,6 +7,7 @@ import MapSection from "@/components/shared/MapSection";
 import StarRating from "@/components/shared/StarRating";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
 import BookingButton from "@/components/shared/BookingButton";
+import HotelRoomsSection from "@/components/hotels/HotelRoomsSection";
 
 export function generateStaticParams() {
   return hotels.map((h) => ({ slug: h.slug }));
@@ -62,19 +63,12 @@ export default async function HotelDetailPage({
         <div className="space-y-10">
           <section>
             <h2 className="font-display text-xl font-bold text-forest-900">{t("rooms")}</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {hotel.rooms.map((room) => (
-                <div key={room.type} className="rounded-card bg-cream-100 p-4">
-                  <p className="font-semibold text-forest-900">{room.type}</p>
-                  <p className="mt-1 text-sm text-forest-600">Up to {room.capacity} guests</p>
-                  <p className="mt-2 font-display text-lg font-bold text-forest-900">
-                    PKR {room.estimatedPricePKR.toLocaleString()}
-                    <span className="text-sm font-normal text-forest-600"> {tc("perNight")}</span>
-                  </p>
-                  <EstimatedBadge lastUpdated={hotel.lastUpdated} />
-                </div>
-              ))}
-            </div>
+            <HotelRoomsSection
+              rooms={hotel.rooms}
+              hotelName={hotel.name}
+              cancellationPolicy={hotel.cancellationPolicy}
+              lastUpdated={hotel.lastUpdated}
+            />
           </section>
 
           <section>

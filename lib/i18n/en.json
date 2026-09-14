@@ -185,7 +185,15 @@
       "rooms": "Rooms",
       "facilities": "Facilities",
       "cancellationPolicy": "Cancellation Policy",
-      "cancellationPlaceholder": "Cancellation policy details will be provided by the hotel at time of booking."
+      "cancellationPlaceholder": "Cancellation policy details will be provided by the hotel at time of booking.",
+      "upToGuests": "Up to {count, plural, one {# guest} other {# guests}}",
+      "viewRoomDetails": "View Room Details",
+      "bedConfiguration": "Bed Configuration",
+      "maxOccupancy": "Max Occupancy",
+      "adults": "Adults",
+      "children": "Children",
+      "roomSize": "Room Size",
+      "sqft": "sq ft"
     }
   },
   "packages": {
