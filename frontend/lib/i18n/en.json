@@ -1,0 +1,356 @@
+{
+  "meta": {
+    "siteName": "Nature & Culture GB",
+    "tagline": "Discover the Mountains. Experience the Culture."
+  },
+  "nav": {
+    "home": "Home",
+    "exploreGB": "Explore GB",
+    "destinations": "Destinations",
+    "hotels": "Hotels",
+    "packages": "Packages",
+    "planMyTrip": "Plan My Trip",
+    "weather": "Weather",
+    "flights": "Flights",
+    "travelUpdates": "Travel Updates",
+    "about": "About",
+    "contact": "Contact",
+    "menu": "Menu"
+  },
+  "common": {
+    "estimated": "Estimated",
+    "estimatedAsOf": "Estimated as of {date}",
+    "lastUpdated": "Last updated",
+    "currency": "PKR",
+    "perNight": "/ night",
+    "days": "days",
+    "nights": "nights",
+    "from": "From",
+    "search": "Search",
+    "searchPlaceholder": "Search destinations, hotels, packages...",
+    "filter": "Filter",
+    "filters": "Filters",
+    "clearFilters": "Clear filters",
+    "noResults": "No results found",
+    "viewMore": "View More",
+    "viewHotel": "View Hotel",
+    "viewItinerary": "View Itinerary",
+    "viewDetails": "View Details",
+    "book": "Book",
+    "bookNow": "Book Now",
+    "callNow": "Call Now",
+    "whatsapp": "WhatsApp",
+    "addToMyTrip": "Add to My Trip",
+    "addedToTrip": "Added to your trip",
+    "seeAll": "See All",
+    "close": "Close",
+    "submit": "Submit",
+    "send": "Send Message",
+    "difficulty": "Difficulty",
+    "duration": "Duration",
+    "activities": "Activities",
+    "bestTimeToVisit": "Best Time to Visit",
+    "highlights": "Highlights",
+    "facilities": "Facilities",
+    "rating": "Rating",
+    "reviews": "Reviews",
+    "live": "Live",
+    "dataUnavailable": "Data unavailable",
+    "status": "Status",
+    "readMore": "Read More",
+    "backToTop": "Back to top",
+    "loading": "Loading...",
+    "region": "Region",
+    "height": "Height",
+    "range": "Range",
+    "map": "Map",
+    "gallery": "Gallery",
+    "nearbyHotels": "Nearby Hotels",
+    "nearbyAttractions": "Nearby Attractions",
+    "costEstimate": "Cost Estimate",
+    "requiredField": "This field is required",
+    "optional": "optional"
+  },
+  "home": {
+    "hero": {
+      "title": "Discover the Mountains.",
+      "titleLine2": "Experience the Culture.",
+      "subtitle": "Plan your journey through Gilgit-Baltistan — Pakistan's crown of peaks, valleys and living heritage.",
+      "ctaExplore": "Explore GB",
+      "ctaPlan": "Plan My Trip"
+    },
+    "exploreSection": {
+      "title": "Explore Gilgit-Baltistan",
+      "subtitle": "Ten regions, one extraordinary land."
+    },
+    "destinations": {
+      "title": "Featured Destinations",
+      "subtitle": "Handpicked valleys, lakes and villages to begin your journey."
+    },
+    "mountains": {
+      "title": "Mountains of GB",
+      "subtitle": "Home to five of the world's fourteen 8,000m peaks."
+    },
+    "hotels": {
+      "title": "Popular Hotels",
+      "subtitle": "Comfortable stays across the region, from budget to luxury."
+    },
+    "packages": {
+      "title": "Tour Packages",
+      "subtitle": "Curated itineraries for every kind of traveler."
+    },
+    "tripBuilder": {
+      "title": "Build Your Own Trip",
+      "subtitle": "Tell us your dates, budget and interests — we'll estimate the rest.",
+      "cta": "Start Planning"
+    },
+    "weather": {
+      "title": "Weather in GB",
+      "subtitle": "Check conditions before you travel."
+    },
+    "flights": {
+      "title": "Flight Status",
+      "subtitle": "Islamabad ↔ Skardu and beyond."
+    },
+    "travelUpdates": {
+      "title": "Travel Situation",
+      "subtitle": "Road and route status across the region."
+    },
+    "why": {
+      "title": "Why Nature & Culture GB",
+      "subtitle": "Local expertise, honest pricing, and a genuine love for this land.",
+      "point1Title": "Local Expertise",
+      "point1Body": "Born and raised in Gilgit-Baltistan, planning routes we've walked ourselves.",
+      "point2Title": "Transparent Pricing",
+      "point2Body": "Every estimate labeled clearly, no hidden costs sprung on you later.",
+      "point3Title": "Culture First",
+      "point3Body": "We connect you with the people and traditions behind the scenery.",
+      "point4Title": "Safety & Support",
+      "point4Body": "Real-time travel updates and support throughout your journey."
+    },
+    "reviews": {
+      "title": "What Travelers Say",
+      "subtitle": "Real trips, real feedback."
+    },
+    "partners": {
+      "title": "As Featured By"
+    },
+    "finalCta": {
+      "title": "Ready for the mountains?",
+      "subtitle": "Let's plan a trip you'll talk about for years.",
+      "cta": "Plan My Trip"
+    }
+  },
+  "footer": {
+    "blurb": "Nature & Culture GB helps travelers plan authentic, well-informed journeys through Gilgit-Baltistan — its mountains, valleys and living culture.",
+    "explore": "Explore",
+    "company": "Company",
+    "support": "Support",
+    "followUs": "Follow Us",
+    "email": "Email",
+    "instagram": "Instagram",
+    "copyright": "© {year} Nature & Culture GB. All rights reserved.",
+    "madeIn": "Made with care in Gilgit-Baltistan"
+  },
+  "destinations": {
+    "pageTitle": "Destinations",
+    "pageSubtitle": "Explore every region of Gilgit-Baltistan",
+    "filterByRegion": "Filter by region",
+    "allRegions": "All Regions",
+    "detail": {
+      "overview": "Overview",
+      "activities": "Activities",
+      "gallery": "Gallery",
+      "map": "Location",
+      "nearby": "Nearby"
+    }
+  },
+  "mountains": {
+    "pageTitle": "Mountains of GB",
+    "pageSubtitle": "Giants of the Karakoram and Himalaya",
+    "elevation": "Elevation"
+  },
+  "hotels": {
+    "pageTitle": "Hotels",
+    "pageSubtitle": "Find your place to rest",
+    "filterCity": "City",
+    "filterPriceRange": "Price Range",
+    "filterRating": "Rating",
+    "filterFacilities": "Facilities",
+    "filterCategory": "Category",
+    "budget": "Budget",
+    "midRange": "Mid-Range",
+    "luxury": "Luxury",
+    "detail": {
+      "rooms": "Rooms",
+      "facilities": "Facilities",
+      "cancellationPolicy": "Cancellation Policy",
+      "cancellationPlaceholder": "Cancellation policy details will be provided by the hotel at time of booking.",
+      "upToGuests": "Up to {count, plural, one {# guest} other {# guests}}",
+      "viewRoomDetails": "View Room Details",
+      "bedConfiguration": "Bed Configuration",
+      "maxOccupancy": "Max Occupancy",
+      "adults": "Adults",
+      "children": "Children",
+      "roomSize": "Room Size",
+      "sqft": "sq ft"
+    }
+  },
+  "packages": {
+    "pageTitle": "Tour Packages",
+    "pageSubtitle": "Curated itineraries across Gilgit-Baltistan",
+    "detail": {
+      "overview": "Overview",
+      "itinerary": "Day-by-Day Itinerary",
+      "included": "What's Included",
+      "day": "Day {number}"
+    }
+  },
+  "tripBuilder": {
+    "pageTitle": "Plan My Trip",
+    "pageSubtitle": "Build a personalized itinerary in a few steps",
+    "step": "Step {current} of {total}",
+    "steps": {
+      "origin": "Starting City",
+      "destinations": "Destinations",
+      "duration": "Duration & Travelers",
+      "budget": "Budget & Hotel Category",
+      "transport": "Transport",
+      "activities": "Activities",
+      "review": "Review"
+    },
+    "fields": {
+      "startingCity": "Starting City",
+      "destinationsLabel": "Destination(s)",
+      "days": "Number of Days",
+      "travelers": "Number of Travelers",
+      "budget": "Budget (PKR)",
+      "hotelCategory": "Hotel Category",
+      "transport": "Transport",
+      "activitiesLabel": "Activities"
+    },
+    "buttons": {
+      "next": "Next",
+      "back": "Back",
+      "finish": "Review Estimate"
+    },
+    "summary": {
+      "title": "Your Trip Estimate",
+      "breakdown": "Cost Breakdown",
+      "hotel": "Hotel",
+      "hotelDetail": "{nights} nights · {rooms} room(s)",
+      "transport": "Transport",
+      "transportDetail": "{vehicles} vehicle(s) · {days} days",
+      "transportDetailShared": "{travelers} traveler(s) · {days} days",
+      "food": "Food",
+      "activitiesCost": "Activities",
+      "entryFees": "Entry Fees",
+      "total": "Total Estimated Cost",
+      "yourBudget": "Your Budget",
+      "withinBudget": "PKR {amount} under your budget",
+      "overBudget": "PKR {amount} over your budget",
+      "includedDestinations": "Destinations included",
+      "includedActivities": "Activities included",
+      "noneSelectedYet": "None selected yet"
+    }
+  },
+  "weather": {
+    "pageTitle": "Weather",
+    "pageSubtitle": "Conditions across Gilgit-Baltistan",
+    "forecast": "5-Day Forecast",
+    "humidity": "Humidity",
+    "wind": "Wind"
+  },
+  "flights": {
+    "pageTitle": "Flights",
+    "pageSubtitle": "Islamabad ↔ Skardu and Gilgit routes",
+    "flightNo": "Flight No.",
+    "route": "Route",
+    "scheduled": "Scheduled",
+    "delayed": "Delayed",
+    "cancelled": "Cancelled",
+    "arrived": "Arrived",
+    "unavailableTitle": "Live flight data unavailable",
+    "unavailableBody": "Flights in this region are highly weather-dependent and schedules change often. We recommend confirming directly with the airline before travel."
+  },
+  "travelUpdates": {
+    "pageTitle": "Travel Updates",
+    "pageSubtitle": "Route and situation reports across the region",
+    "open": "Open",
+    "closed": "Closed",
+    "restricted": "Restricted",
+    "source": "Source",
+    "mockDataTitle": "Illustrative data",
+    "mockDataBody": "These reports are placeholder/mock content for now. Live route and situation updates will replace them in a later phase."
+  },
+  "reviews": {
+    "pageTitle": "Reviews",
+    "pageSubtitle": "What travelers say about their trips",
+    "averageRating": "Average Rating",
+    "basedOn": "Based on {count} reviews",
+    "form": {
+      "title": "Share Your Experience",
+      "name": "Your Name",
+      "rating": "Your Rating",
+      "text": "Your Review",
+      "submit": "Submit Review"
+    }
+  },
+  "about": {
+    "pageTitle": "About Us",
+    "pageSubtitle": "Our story, mission and the people behind Nature & Culture GB"
+  },
+  "contact": {
+    "pageTitle": "Contact",
+    "pageSubtitle": "We'd love to hear from you",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "submit": "Send Message"
+    },
+    "info": {
+      "email": "Email",
+      "instagram": "Instagram",
+      "phone": "Phone",
+      "phoneNote": "Available via the Book Now flow"
+    }
+  },
+  "admin": {
+    "loginTitle": "Admin Login",
+    "loginSubtitle": "Staff access only",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In",
+    "signingIn": "Signing in…",
+    "invalidCredentials": "Invalid email or password.",
+    "loginError": "Something went wrong. Please try again.",
+    "dashboardTitle": "Admin Dashboard",
+    "dashboardSubtitle": "Manage Nature & Culture GB's content and leads.",
+    "backToDashboard": "Back to Dashboard",
+    "logout": "Log Out",
+    "loggedInAs": "Signed in as {email}",
+    "itemCount": "{count, plural, one {# item} other {# items}}",
+    "roomCount": "{count, plural, one {# room type} other {# room types}} across {hotels, plural, one {# hotel} other {# hotels}}",
+    "crudComingSoon": "Full editing tools for this section are coming soon — this page confirms your admin session reaches the backend correctly.",
+    "notImplemented": "This section has no backend data model yet — nothing to manage here until it's built.",
+    "sections": {
+      "destinations": "Destinations",
+      "hotels": "Hotels",
+      "rooms": "Rooms",
+      "mountains": "Mountains",
+      "packages": "Packages",
+      "situationReports": "Travel Updates",
+      "siteSettings": "Site Settings",
+      "leads": "Trip Leads",
+      "reviews": "Reviews"
+    }
+  },
+  "booking": {
+    "modalTitle": "Book with Nature & Culture GB",
+    "modalBody": "Reach us directly to confirm availability and pricing.",
+    "callAction": "Call Now",
+    "whatsappAction": "Message on WhatsApp"
+  }
+}
