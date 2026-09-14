@@ -7,6 +7,8 @@ import destinationsRouter from "./routes/destinations";
 import hotelsRouter from "./routes/hotels";
 import mountainsRouter from "./routes/mountains";
 import packagesRouter from "./routes/packages";
+import tripLeadsRouter from "./routes/tripLeads";
+import contactRouter from "./routes/contact";
 
 const corsOrigins = (process.env.CORS_ORIGIN ?? "http://localhost:3000")
   .split(",")
@@ -28,6 +30,8 @@ app.use("/destinations", destinationsRouter);
 app.use("/hotels", hotelsRouter);
 app.use("/mountains", mountainsRouter);
 app.use("/packages", packagesRouter);
+app.use("/trip-leads", tripLeadsRouter);
+app.use("/contact", contactRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
