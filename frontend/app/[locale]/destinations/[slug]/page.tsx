@@ -137,7 +137,11 @@ export default async function DestinationDetailPage({
           <section id="gallery">
             <h2 className="font-display text-xl font-bold text-forest-900">{t("gallery")}</h2>
             <div className="mt-4">
-              <ImageGallery images={destination.images} alt={destination.name} />
+              <ImageGallery
+                images={destination.images}
+                videos={destination.videos}
+                alt={destination.name}
+              />
             </div>
           </section>
 

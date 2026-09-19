@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { REGIONS, DIFFICULTIES } from "../../lib/enums";
+import { mediaUrlSchema } from "../../lib/uploads";
 
 const destinationFields = {
   slug: z.string().trim().min(1).max(200),
   name: z.string().trim().min(1).max(200),
   region: z.enum(REGIONS),
-  images: z.array(z.string().url()),
+  images: z.array(mediaUrlSchema),
+  videos: z.array(mediaUrlSchema).optional(),
   shortDescription: z.string().trim().min(1).max(500),
   longDescription: z.string().trim().min(1),
   bestTimeToVisit: z.string().trim().min(1).max(200),

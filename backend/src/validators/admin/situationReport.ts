@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { REGIONS } from "../../lib/enums";
+import { mediaUrlSchema } from "../../lib/uploads";
 
 // Every report requires source + reportedAt (non-optional below), per
 // backend_prompt.md's "Date + Time + Source" rule for situation reports.
@@ -11,6 +12,8 @@ const situationReportFields = {
   source: z.string().trim().min(1).max(300),
   reportedAt: z.coerce.date(),
   createdBy: z.string().trim().min(1).max(200),
+  // "" clears the attachment; anything else must be a real upload or URL.
+  imageUrl: z.union([mediaUrlSchema, z.literal("")]).nullish(),
 };
 
 export const createSituationReportSchema = z.object(situationReportFields);

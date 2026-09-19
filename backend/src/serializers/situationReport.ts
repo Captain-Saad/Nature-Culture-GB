@@ -12,6 +12,8 @@ export function serializeSituationReport(r: DbSituationReport) {
     status: r.status,
     description: r.details,
     source: r.source,
+    // Additive: existing consumers reading the fields above are unaffected.
+    imageUrl: r.imageUrl,
     timestamp: r.reportedAt.toISOString(),
   };
 }

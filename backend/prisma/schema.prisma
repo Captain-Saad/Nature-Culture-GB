@@ -70,12 +70,20 @@ enum SituationStatus {
   Restricted
 }
 
+// Galleries are a pair of parallel arrays rather than one media[] of
+// { url, type } objects: `images` is already read by the serializers, the
+// frontend's public contract and every seeded row, so renaming it would mean
+// a data migration and a breaking change to the public JSON shape. Adding
+// `videos` alongside is purely additive -- existing responses are unchanged,
+// and consumers render images first, then videos, as one gallery.
+
 model Destination {
   id       String @id @default(cuid())
   slug     String @unique
   name     String
   region   Region
   images   String[]
+  videos   String[]
 
   shortDescription String
   // backend_prompt calls this "longDescription"; the frontend contract's
@@ -125,6 +133,7 @@ model Hotel {
   // the same concept "city" — serializer renames region -> city.
   region Region
   images String[]
+  videos String[]
 
   // Editorial-only for now; the frontend Hotel contract has no generic
   // description field, so this is stored but not included in the public
@@ -169,6 +178,7 @@ model Mountain {
   range        String
   difficulty   Difficulty
   images       String[]
+  videos       String[]
   description  String @db.Text
 
   // Verified but not currently rendered by the frontend; kept for
@@ -196,6 +206,7 @@ model Package {
   category     String
   durationDays Int
   images      String[]
+  videos      String[]
 
   // backend_prompt's single "estimatedPricePKR" split into min/max to
   // match the frontend's { min, max } contract.
@@ -293,6 +304,12 @@ model SituationReport {
   details String @db.Text
   source  String
 
+  // A single optional attachment (road closure photo, notice scan) rather
+  // than a gallery -- these are short operational notices, not editorial
+  // pages. Stores the same "/uploads/<file>" or absolute URL as the gallery
+  // arrays, so it goes through the same upload endpoint and validator.
+  imageUrl String?
+
   reportedAt DateTime
   createdBy  String
 
@@ -300,6 +317,34 @@ model SituationReport {
   updatedAt DateTime @updatedAt
 
   @@index([region])
+}
+
+/**
+ * Editable site-wide copy and the home hero background.
+ *
+ * A singleton: exactly one row, with the fixed id "default" (see
+ * SITE_SETTING_ID in src/routes/admin/siteSettings.ts). Modelling it as a
+ * table rather than env vars is what lets an admin change it at runtime;
+ * modelling it as one row rather than key/value pairs keeps the read a
+ * single query with typed fields.
+ *
+ * Every field is nullable on purpose: null means "not set, fall back to the
+ * built-in default" (the i18n string, or the bundled hero image), so the
+ * site renders correctly before an admin has ever opened this page.
+ */
+model SiteSetting {
+  id String @id @default("default")
+
+  heroHeadline       String?
+  heroSubtext        String? @db.Text
+  aboutUsCopy        String? @db.Text
+  contactDisplayText String? @db.Text
+
+  // Same "/uploads/<file>" or absolute URL as the gallery fields.
+  heroBackgroundImage String?
+  heroBackgroundVideo String?
+
+  updatedAt DateTime @updatedAt
 }
 
 model AdminUser {

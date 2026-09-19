@@ -5,6 +5,7 @@ interface RoomType {
   capacity: number;
   estimatedPricePKR: number;
   images: string[];
+  videos?: string[];
   bedConfig: string;
   maxOccupancy: { adults: number; children: number };
   sizeSqFt?: number;
@@ -26,6 +27,7 @@ export function serializeHotel(h: DbHotel) {
     name: h.name,
     city: h.region,
     images: h.images,
+    videos: h.videos,
     starRating: h.starRating,
     category: h.category,
     estimatedPricePKR: h.estimatedPricePerNightPKR,

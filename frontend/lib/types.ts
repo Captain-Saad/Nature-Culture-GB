@@ -18,6 +18,10 @@ export interface Destination {
   name: string;
   region: Region;
   images: string[];
+  // Optional across every gallery type: mock data predates video support and
+  // externally seeded rows may have none. Renderers merge images + videos via
+  // lib/utils/media.ts.
+  videos?: string[];
   shortDescription: string;
   description: string;
   bestTimeToVisit: string;
@@ -41,6 +45,7 @@ export interface HotelRoom {
   // Room-*type* detail, not per-instance inventory — a lead-gen site
   // with no real booking system has no need to model individual rooms.
   images: string[];
+  videos?: string[];
   bedConfig: string;
   maxOccupancy: { adults: number; children: number };
   sizeSqFt?: number;
@@ -53,6 +58,7 @@ export interface Hotel {
   name: string;
   city: Region;
   images: string[];
+  videos?: string[];
   starRating: number;
   category: HotelCategory;
   estimatedPricePKR: number;
@@ -73,6 +79,7 @@ export interface Mountain {
   worldRank: number;
   difficulty: Difficulty;
   images: string[];
+  videos?: string[];
   description: string;
   nearestTown: string;
   lat: number;
@@ -101,6 +108,7 @@ export interface TourPackage {
   category: PackageCategory;
   durationDays: number;
   images: string[];
+  videos?: string[];
   estimatedPricePKR: { min: number; max: number };
   highlights: string[];
   itinerary: ItineraryDay[];
@@ -149,6 +157,8 @@ export interface SituationReport {
   status: SituationStatus;
   description: string;
   source: string;
+  /** Optional attachment — a road photo or official notice. */
+  imageUrl?: string | null;
   timestamp: string;
 }
 

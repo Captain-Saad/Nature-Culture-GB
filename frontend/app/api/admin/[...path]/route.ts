@@ -33,11 +33,20 @@ async function proxy(request: NextRequest, path: string[]) {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  if (!["GET", "DELETE", "HEAD"].includes(request.method)) {
-    const body = await request.text();
-    if (body) {
+  if (!["GET", "HEAD"].includes(request.method)) {
+    // Read as bytes, not text: file uploads come through here as
+    // multipart/form-data, and .text() would corrupt any non-UTF-8 byte in
+    // the image or video payload. DELETE is included because
+    // DELETE /admin/uploads carries a JSON body naming the file to remove.
+    const body = await request.arrayBuffer();
+    if (body.byteLength > 0) {
       init.body = body;
-      init.headers = { ...init.headers, "Content-Type": "application/json" };
+      // Forward the original Content-Type verbatim -- a multipart body is
+      // unparseable without the exact boundary token it carries.
+      init.headers = {
+        ...init.headers,
+        "Content-Type": request.headers.get("Content-Type") ?? "application/json",
+      };
     }
   }
 

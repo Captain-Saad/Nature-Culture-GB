@@ -62,7 +62,7 @@ export default async function MountainDetailPage({
           <div className="mt-8">
             <h2 className="font-display text-xl font-bold text-forest-900">{t("common.gallery")}</h2>
             <div className="mt-4">
-              <ImageGallery images={mountain.images} alt={mountain.name} />
+              <ImageGallery images={mountain.images} videos={mountain.videos} alt={mountain.name} />
             </div>
           </div>
 

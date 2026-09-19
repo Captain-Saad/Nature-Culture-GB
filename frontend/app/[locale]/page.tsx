@@ -26,6 +26,7 @@ import {
   getSituationReports,
   getReviews,
 } from "@/lib/mock-data";
+import { getSiteSettings } from "@/lib/site-settings";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -38,21 +39,36 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const t = await getTranslations("home");
-  const [destinations, mountains, hotels, packages, weather, flights, situationReports, reviews] =
-    await Promise.all([
-      getDestinations(),
-      getMountains(),
-      getHotels(),
-      getPackages(),
-      getWeather(),
-      getFlights(),
-      getSituationReports(),
-      getReviews(),
-    ]);
+  const [
+    destinations,
+    mountains,
+    hotels,
+    packages,
+    weather,
+    flights,
+    situationReports,
+    reviews,
+    siteSettings,
+  ] = await Promise.all([
+    getDestinations(),
+    getMountains(),
+    getHotels(),
+    getPackages(),
+    getWeather(),
+    getFlights(),
+    getSituationReports(),
+    getReviews(),
+    getSiteSettings(),
+  ]);
 
   return (
     <>
-      <Hero />
+      <Hero
+        headline={siteSettings?.heroHeadline}
+        subtext={siteSettings?.heroSubtext}
+        backgroundImage={siteSettings?.heroBackgroundImage}
+        backgroundVideo={siteSettings?.heroBackgroundVideo}
+      />
 
       <Section
         id="explore"

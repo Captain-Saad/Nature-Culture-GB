@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { REGIONS, PACKAGE_CATEGORIES } from "../../lib/enums";
+import { mediaUrlSchema } from "../../lib/uploads";
 
 const itineraryDaySchema = z.object({
   day: z.coerce.number().int().positive(),
@@ -14,7 +15,8 @@ const packageFields = {
   title: z.string().trim().min(1).max(200),
   category: z.enum(PACKAGE_CATEGORIES),
   durationDays: z.coerce.number().int().positive(),
-  images: z.array(z.string().url()),
+  images: z.array(mediaUrlSchema),
+  videos: z.array(mediaUrlSchema).optional(),
   estimatedPriceMinPKR: z.coerce.number().int().nonnegative(),
   estimatedPriceMaxPKR: z.coerce.number().int().nonnegative(),
   priceLastUpdated: z.coerce.date(),

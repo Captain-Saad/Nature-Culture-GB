@@ -15,6 +15,8 @@ export function serializeDestination(d: DbDestination) {
     name: d.name,
     region: d.region,
     images: d.images,
+    // Additive: existing consumers that only read `images` are unaffected.
+    videos: d.videos,
     shortDescription: d.shortDescription,
     description: d.longDescription,
     bestTimeToVisit: d.bestTimeToVisit,

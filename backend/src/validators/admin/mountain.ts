@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DIFFICULTIES } from "../../lib/enums";
+import { mediaUrlSchema } from "../../lib/uploads";
 
 const mountainFields = {
   slug: z.string().trim().min(1).max(200),
@@ -7,7 +8,8 @@ const mountainFields = {
   heightMeters: z.coerce.number().int().positive(),
   range: z.string().trim().min(1).max(200),
   difficulty: z.enum(DIFFICULTIES),
-  images: z.array(z.string().url()),
+  images: z.array(mediaUrlSchema),
+  videos: z.array(mediaUrlSchema).optional(),
   description: z.string().trim().min(1),
   firstAscent: z.string().trim().max(300).optional(),
   bestSeason: z.string().trim().max(200).optional(),

@@ -30,7 +30,7 @@ export default function RoomDetailModal({
     <Modal open={open} onClose={onClose} title={room.type} size="lg">
       {room.images.length > 0 && (
         <div className="mb-6">
-          <ImageGallery images={room.images} alt={`${room.type} — ${hotelName}`} />
+          <ImageGallery images={room.images} videos={room.videos} alt={`${room.type} — ${hotelName}`} />
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { REGIONS, HOTEL_CATEGORIES } from "../../lib/enums";
+import { mediaUrlSchema } from "../../lib/uploads";
 
 const roomTypeSchema = z.object({
   type: z.string().trim().min(1).max(100),
@@ -8,7 +9,10 @@ const roomTypeSchema = z.object({
   // Room-*type* detail, not per-instance inventory -- see the comment on
   // HotelRoom in frontend/lib/types.ts for why individual rooms aren't
   // modeled here.
-  images: z.array(z.string().url()),
+  images: z.array(mediaUrlSchema),
+  // Rooms live as JSON on Hotel, so their gallery gains videos without a
+  // migration -- same image/video split as the top-level entities.
+  videos: z.array(mediaUrlSchema).optional(),
   bedConfig: z.string().trim().min(1).max(200),
   maxOccupancy: z.object({
     adults: z.coerce.number().int().nonnegative(),
@@ -22,7 +26,8 @@ const hotelFields = {
   slug: z.string().trim().min(1).max(200),
   name: z.string().trim().min(1).max(200),
   region: z.enum(REGIONS),
-  images: z.array(z.string().url()),
+  images: z.array(mediaUrlSchema),
+  videos: z.array(mediaUrlSchema).optional(),
   description: z.string().trim().max(2000).optional(),
   starRating: z.coerce.number().int().min(1).max(5),
   category: z.enum(HOTEL_CATEGORIES),

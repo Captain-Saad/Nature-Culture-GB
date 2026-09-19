@@ -14,6 +14,7 @@ export function serializeMountain(m: DbMountain) {
     worldRank: m.worldRank,
     difficulty: m.difficulty,
     images: m.images,
+    videos: m.videos,
     description: m.description,
     nearestTown: m.nearestTown,
     lat: m.lat,

@@ -56,7 +56,7 @@ export default async function HotelDetailPage({
       </header>
 
       <div className="mb-10">
-        <ImageGallery images={hotel.images} alt={hotel.name} />
+        <ImageGallery images={hotel.images} videos={hotel.videos} alt={hotel.name} />
       </div>
 
       <div className="grid gap-10 lg:grid-cols-[1fr_320px]">

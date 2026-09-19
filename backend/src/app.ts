@@ -3,6 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 
+import { UPLOAD_DIR, UPLOAD_URL_PREFIX, ensureUploadDir } from "./lib/uploads";
+
 import destinationsRouter from "./routes/destinations";
 import hotelsRouter from "./routes/hotels";
 import mountainsRouter from "./routes/mountains";
@@ -14,6 +16,7 @@ import adminRouter from "./routes/admin";
 import weatherRouter from "./routes/weather";
 import flightsRouter from "./routes/flights";
 import situationReportsRouter from "./routes/situationReports";
+import siteSettingsRouter from "./routes/siteSettings";
 
 const corsOrigins = (process.env.CORS_ORIGIN ?? "http://localhost:3000")
   .split(",")
@@ -31,6 +34,25 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+// Uploaded media, served read-only. Writing and deleting happens only through
+// the JWT-protected /admin/uploads routes -- this mount serves existing files
+// and nothing else (no directory listing, no index fallback).
+ensureUploadDir();
+app.use(
+  UPLOAD_URL_PREFIX,
+  express.static(UPLOAD_DIR, {
+    index: false,
+    fallthrough: true,
+    maxAge: "1y",
+    setHeaders: (res) => {
+      // helmet() sets Cross-Origin-Resource-Policy: same-origin globally,
+      // which would stop the frontend on :3000 from rendering media served
+      // from :4100. These files are public content by design.
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    },
+  })
+);
+
 app.use("/destinations", destinationsRouter);
 app.use("/hotels", hotelsRouter);
 app.use("/mountains", mountainsRouter);
@@ -42,6 +64,7 @@ app.use("/admin", adminRouter);
 app.use("/weather", weatherRouter);
 app.use("/flights", flightsRouter);
 app.use("/situation-reports", situationReportsRouter);
+app.use("/site-settings", siteSettingsRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });

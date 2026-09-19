@@ -136,7 +136,7 @@ export default async function PackageDetailPage({
           <section id="gallery">
             <h2 className="font-display text-xl font-bold text-forest-900">{tc("gallery")}</h2>
             <div className="mt-4">
-              <ImageGallery images={pkg.images} alt={pkg.title} />
+              <ImageGallery images={pkg.images} videos={pkg.videos} alt={pkg.title} />
             </div>
           </section>
 

@@ -49,11 +49,18 @@ export function useAdminApi() {
 
   const request = useCallback(
     async <T,>(path: string, options?: RequestInit): Promise<AdminApiResult<T>> => {
+      // FormData must set its own Content-Type so the browser can generate
+      // the multipart boundary -- forcing application/json here would make
+      // every file upload unparseable on the backend.
+      const isFormData = typeof FormData !== "undefined" && options?.body instanceof FormData;
+
       let res: Response;
       try {
         res = await fetch(`/api/admin/${path}`, {
           ...options,
-          headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) },
+          headers: isFormData
+            ? { ...(options?.headers ?? {}) }
+            : { "Content-Type": "application/json", ...(options?.headers ?? {}) },
         });
       } catch {
         return { data: null, error: "Network error. Please check your connection and try again." };

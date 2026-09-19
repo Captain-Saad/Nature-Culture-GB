@@ -7,6 +7,8 @@ import authRouter from "./auth";
 import reviewsRouter from "./reviews";
 import leadsRouter from "./leads";
 import contactMessagesRouter from "./contactMessages";
+import uploadsRouter from "./uploads";
+import siteSettingsRouter from "./siteSettings";
 
 import { createDestinationSchema, updateDestinationSchema } from "../../validators/admin/destination";
 import { createHotelSchema, updateHotelSchema } from "../../validators/admin/hotel";
@@ -33,6 +35,12 @@ router.get("/me", (req, res) => {
   // returns as `user`, rather than the JWT payload's raw `sub` field name.
   res.json({ id: req.admin!.sub, email: req.admin!.email, role: req.admin!.role });
 });
+
+// Media uploads shared by every entity's gallery editor.
+router.use("/uploads", uploadsRouter);
+
+// Singleton -- read/patch only, so not a createAdminCrudRouter.
+router.use("/site-settings", siteSettingsRouter);
 
 router.use(
   "/destinations",

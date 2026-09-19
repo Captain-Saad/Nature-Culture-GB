@@ -24,6 +24,7 @@ export function serializePackage(p: DbPackage) {
     category: p.category,
     durationDays: p.durationDays,
     images: p.images,
+    videos: p.videos,
     estimatedPricePKR: { min: p.estimatedPriceMinPKR, max: p.estimatedPriceMaxPKR },
     highlights: p.highlights,
     itinerary: p.itinerary as unknown as ItineraryDay[],

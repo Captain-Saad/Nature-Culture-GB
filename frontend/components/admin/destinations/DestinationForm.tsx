@@ -6,7 +6,7 @@ import { useAdminApi } from "@/lib/admin/useAdminApi";
 import { slugify } from "@/lib/admin/slugify";
 import { REGIONS, DIFFICULTIES } from "@/lib/admin/enums";
 import TagListInput from "@/components/admin/shared/TagListInput";
-import ImageGalleryManager from "@/components/admin/shared/ImageGalleryManager";
+import MediaGalleryManager from "@/components/admin/shared/MediaGalleryManager";
 import type { AdminDestination, AdminDestinationInput } from "@/lib/admin/types";
 
 const emptyDestination: AdminDestinationInput = {
@@ -14,6 +14,7 @@ const emptyDestination: AdminDestinationInput = {
   name: "",
   region: REGIONS[0],
   images: [],
+  videos: [],
   shortDescription: "",
   longDescription: "",
   bestTimeToVisit: "",
@@ -287,9 +288,13 @@ export default function DestinationForm({ mode, initial }: DestinationFormProps)
       </div>
 
       <div className="rounded-card bg-white p-6 shadow-card">
-        <h2 className="font-display text-lg font-bold text-forest-900">Images</h2>
+        <h2 className="font-display text-lg font-bold text-forest-900">Photos &amp; Videos</h2>
         <div className="mt-4">
-          <ImageGalleryManager label="" images={values.images} onChange={(v) => set("images", v)} />
+          <MediaGalleryManager
+            label=""
+            value={{ images: values.images, videos: values.videos }}
+            onChange={(next) => setValues((prev) => ({ ...prev, images: next.images, videos: next.videos }))}
+          />
         </div>
       </div>
 
