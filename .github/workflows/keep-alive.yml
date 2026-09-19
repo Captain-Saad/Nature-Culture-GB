@@ -1,0 +1,26 @@
+name: Keep backend and database warm
+
+# Complements frontend/components/shared/KeepAlivePing.tsx, which only
+# pings while a visitor's browser has a page open. This runs on its own
+# schedule regardless of real traffic, so Render's free-tier instance
+# (spins down after ~15 min idle, ~30-50s cold start on the next request)
+# and Supabase's free-tier project (paused after ~7 days with no DB
+# activity) both stay warm even through a stretch with zero visitors.
+# GET /health itself runs a real query against Supabase (see
+# backend/src/app.ts), so one ping covers both services.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          if [ -z "${{ vars.RENDER_BACKEND_URL }}" ]; then
+            echo "RENDER_BACKEND_URL repository variable isn't set yet -- nothing to ping until the backend is deployed to Render. Set it under Settings > Secrets and variables > Actions > Variables once it is."
+            exit 0
+          fi
+          curl -fsS --max-time 30 "${{ vars.RENDER_BACKEND_URL }}/health"

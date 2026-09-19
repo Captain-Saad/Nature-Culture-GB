@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import { UPLOAD_DIR, UPLOAD_URL_PREFIX, ensureUploadDir } from "./lib/uploads";
+import { prisma } from "./lib/prisma";
 
 import destinationsRouter from "./routes/destinations";
 import hotelsRouter from "./routes/hotels";
@@ -30,8 +31,23 @@ app.use(cors({ origin: corsOrigins }));
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(express.json());
 
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
+/**
+ * Doubles as the keep-alive target for both free-tier services this
+ * runs on: hitting it keeps Render's instance from spinning down after
+ * ~15 minutes idle, and the DB round trip below keeps Supabase's
+ * project from being paused after a week with no activity. See
+ * frontend/components/shared/KeepAlivePing.tsx for the client that
+ * calls this on an interval.
+ */
+app.get("/health", async (_req, res) => {
+  const startedAt = Date.now();
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: "ok", database: "ok", databaseLatencyMs: Date.now() - startedAt });
+  } catch (err) {
+    console.error("Health check DB query failed:", err);
+    res.status(503).json({ status: "ok", database: "error" });
+  }
 });
 
 // Uploaded media, served read-only. Writing and deleting happens only through

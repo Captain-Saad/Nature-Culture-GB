@@ -8,6 +8,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import SmoothScrollProvider from "@/components/layout/SmoothScrollProvider";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import KeepAlivePing from "@/components/shared/KeepAlivePing";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -79,6 +80,7 @@ export default async function LocaleLayout({
     >
       <body className="min-h-screen bg-cream-100 font-body text-forest-900 antialiased">
         <NextIntlClientProvider messages={messages}>
+          <KeepAlivePing />
           <SmoothScrollProvider>
             <Navbar />
             <main>{children}</main>
