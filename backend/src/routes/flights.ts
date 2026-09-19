@@ -1,67 +1,55 @@
 import { Router } from "express";
+import { prisma } from "../lib/prisma";
+import { FLIGHT_ROUTES } from "../lib/flightRoutes";
 
 const router = Router();
 
 /**
- * Researched before writing this (see the phase summary for sources):
- * no free/public API reliably covers live status for small Pakistani
- * domestic routes like Islamabad<->Skardu/Gilgit. OpenSky Network is
- * free but ADS-B-coverage-dependent and known-weak outside Europe/
- * North America; AviationStack and similar aggregators only offer
- * small metered free tiers unsuitable for a always-on feature; PIA has
- * no public developer API. So: no live source, no fabricated numbers --
- * an explicit unavailable response, per backend_prompt.md Phase 7.
- *
- * Route/flight numbers below are real (PK451/452 Islamabad<->Skardu,
- * PK601/602 Islamabad<->Gilgit) -- confirmed via flight-tracker listings
- * during this research pass. The frontend's Phase 1 mock data had these
- * two routes' numbers swapped; worth fixing there too during the wiring
- * pass, though it's cosmetic since mock data is being replaced anyway.
+ * GET /flights -- serves whatever the refresh job (backend/src/jobs/
+ * refreshFlights.ts) last wrote to FlightStatusCache. Never calls
+ * AviationStack itself: that job runs on its own schedule precisely so
+ * that page-load traffic can't touch the free tier's ~100
+ * requests/month ceiling.
  */
-const KNOWN_ROUTES = [
-  {
-    id: "flt-01",
-    flightNumber: "PK451",
-    airline: "PIA",
-    origin: "Islamabad (ISB)",
-    destination: "Skardu (KDU)",
-  },
-  {
-    id: "flt-02",
-    flightNumber: "PK452",
-    airline: "PIA",
-    origin: "Skardu (KDU)",
-    destination: "Islamabad (ISB)",
-  },
-  {
-    id: "flt-03",
-    flightNumber: "PK601",
-    airline: "PIA",
-    origin: "Islamabad (ISB)",
-    destination: "Gilgit (GIL)",
-  },
-  {
-    id: "flt-04",
-    flightNumber: "PK602",
-    airline: "PIA",
-    origin: "Gilgit (GIL)",
-    destination: "Islamabad (ISB)",
-  },
-];
+router.get("/", async (_req, res) => {
+  const rows = await prisma.flightStatusCache.findMany();
+  const byId = new Map(rows.map((r) => [r.id, r]));
 
-// GET /flights
-router.get("/", (_req, res) => {
-  res.json({
-    available: false,
-    message: "Live flight data unavailable",
-    routes: KNOWN_ROUTES.map((route) => ({
-      ...route,
-      isLive: false,
-      status: null,
-      scheduledDeparture: null,
-      lastUpdated: null,
-    })),
+  const routes = FLIGHT_ROUTES.map((leg) => {
+    const row = byId.get(leg.id);
+    if (!row) {
+      // The refresh job hasn't run yet at all (e.g. a brand new deploy).
+      return {
+        id: leg.id,
+        airline: leg.airline,
+        origin: leg.originLabel,
+        destination: leg.destinationLabel,
+        available: false,
+        flightNumber: null,
+        status: null,
+        scheduledDeparture: null,
+        estimatedDeparture: null,
+        message: "Live flight data unavailable",
+        lastUpdated: null,
+      };
+    }
+
+    return {
+      id: row.id,
+      airline: row.airline,
+      origin: row.origin,
+      destination: row.destination,
+      available: row.available,
+      flightNumber: row.flightNumber,
+      status: row.status,
+      scheduledDeparture: row.scheduledDeparture?.toISOString() ?? null,
+      estimatedDeparture: row.estimatedDeparture?.toISOString() ?? null,
+      message: row.message,
+      lastUpdated: row.lastFetchedAt?.toISOString() ?? null,
+    };
   });
+
+  res.json(routes);
 });
 
 export default router;

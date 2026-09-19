@@ -355,3 +355,53 @@ model AdminUser {
 
   createdAt DateTime @default(now())
 }
+
+/**
+ * One row per configured route leg (see backend/src/lib/flightRoutes.ts),
+ * holding whatever AviationStack returned on the last scheduled refresh.
+ * Never written to on a GET /flights request -- only the refresh job
+ * (backend/src/jobs/refreshFlights.ts) writes here, since AviationStack's
+ * free tier is capped at ~100 requests/month and can't absorb per-request
+ * traffic. `available: false` on a failed refresh, same as this table's
+ * absence of stale data implies -- no row is ever left showing a status
+ * from a fetch that didn't actually succeed.
+ */
+model FlightStatusCache {
+  /** Route leg id, e.g. "isb-kdu" -- matches FLIGHT_ROUTES, not a flight number (which varies day to day). */
+  id String @id
+
+  airline      String
+  origin       String
+  destination  String
+  available    Boolean
+
+  // Null whenever `available` is false.
+  flightNumber       String?
+  status             String? // "Scheduled" | "Delayed" | "Cancelled" | "Arrived" | "Departed"
+  scheduledDeparture DateTime?
+  estimatedDeparture DateTime?
+
+  message String?
+
+  /** When this row's data was last successfully fetched -- null if unavailable. */
+  lastFetchedAt DateTime?
+  updatedAt     DateTime  @updatedAt
+}
+
+/**
+ * A row per AviationStack call the refresh job makes, purely so we can
+ * see (via /admin or a direct query) how much of the free tier's
+ * ~100-requests/month allowance has been used and get an early warning
+ * before hitting it -- see countRequestsThisMonth in
+ * backend/src/services/aviationstack.ts.
+ */
+model ApiUsageLog {
+  id         String   @id @default(cuid())
+  provider   String // "aviationstack"
+  routeLegId String?
+  success    Boolean
+  note       String? @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([provider, createdAt])
+}
