@@ -25,12 +25,12 @@ import {
   getFlights,
   getSituationReports,
   getReviews,
-} from "@/lib/mock-data";
+} from "@/lib/api";
 import { getSiteSettings } from "@/lib/site-settings";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Nature & Culture GB — Discover the Mountains, Experience the Culture",
+    title: "Nature & Culture GB — Discover the Nature, Experience the Culture",
     description:
       "Plan your journey through Gilgit-Baltistan: destinations, hotels, mountains, tour packages, weather, flights and travel updates — all in one place.",
     openGraph: { title: "Nature & Culture GB", type: "website" },
@@ -154,7 +154,7 @@ export default async function HomePage() {
       >
         <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {weather.slice(0, 3).map((w) => (
-            <WeatherCard key={w.city} weather={w} />
+            <WeatherCard key={w.location} weather={w} />
           ))}
         </ScrollReveal>
       </Section>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getWeather } from "@/lib/mock-data";
+import { getWeather } from "@/lib/api";
 import WeatherCard from "@/components/weather/WeatherCard";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,7 +23,7 @@ export default async function WeatherPage() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {weather.map((w) => (
-          <WeatherCard key={w.city} weather={w} />
+          <WeatherCard key={w.location} weather={w} />
         ))}
       </div>
     </div>

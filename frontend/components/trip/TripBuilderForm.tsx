@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Destination } from "@/lib/types";
 import { TripState, defaultTripState } from "@/lib/trip-types";
-import { pricingTable, HotelCategoryKey, TransportKey } from "@/lib/mock-data/pricing";
+import { pricingTable, HotelCategoryKey, TransportKey } from "@/lib/pricing";
 import CostCalculator from "./CostCalculator";
 
 const STARTING_CITIES = ["Islamabad", "Lahore", "Karachi", "Peshawar"];

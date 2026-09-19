@@ -1,4 +1,4 @@
-import { HotelCategoryKey, TransportKey } from "@/lib/mock-data/pricing";
+import { HotelCategoryKey, TransportKey } from "@/lib/pricing";
 
 export interface TripState {
   startingCity: string;

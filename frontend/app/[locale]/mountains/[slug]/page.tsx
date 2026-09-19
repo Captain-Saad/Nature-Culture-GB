@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { mountains, getMountainBySlug } from "@/lib/mock-data";
+import { getMountains, getMountainBySlug } from "@/lib/api";
+import { placeholderImage } from "@/lib/utils/image";
+import { resolveMediaUrl } from "@/lib/utils/media";
 import ImageGallery from "@/components/shared/ImageGallery";
 import MapSection from "@/components/shared/MapSection";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const mountains = await getMountains();
   return mountains.map((m) => ({ slug: m.slug }));
 }
 
@@ -22,7 +25,11 @@ export async function generateMetadata({
   return {
     title: mountain.name,
     description: mountain.description,
-    openGraph: { title: mountain.name, description: mountain.description, images: mountain.images.slice(0, 1) },
+    openGraph: {
+      title: mountain.name,
+      description: mountain.description,
+      images: mountain.images.slice(0, 1).map(resolveMediaUrl),
+    },
   };
 }
 
@@ -41,7 +48,11 @@ export default async function MountainDetailPage({
     <div className="container-content py-12">
       <div className="relative aspect-[16/7] w-full overflow-hidden rounded-card">
         <Image
-          src={mountain.images[0]}
+          src={
+            mountain.images[0]
+              ? resolveMediaUrl(mountain.images[0])
+              : placeholderImage(mountain.slug, 1600, 700)
+          }
           alt={mountain.name}
           fill
           sizes="100vw"

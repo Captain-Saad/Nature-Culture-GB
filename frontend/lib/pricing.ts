@@ -1,9 +1,8 @@
 /**
- * Mock pricing table for the Trip Builder's CostCalculator.
- * Phase 2: CostCalculator computes a full live breakdown from these
- * figures — hotel rooms from traveler count, vehicles needed from
- * transport capacity, per-activity costs, and per-destination entry
- * fees — rather than Phase 1's flat multipliers.
+ * Pricing config for the Trip Builder's CostCalculator — hotel rooms
+ * from traveler count, vehicles needed from transport capacity,
+ * per-activity costs, and per-destination entry fees. No admin CRUD
+ * exists for this yet, so it's hardcoded here rather than fetched.
  */
 export const pricingTable = {
   hotelPerNightPKR: {

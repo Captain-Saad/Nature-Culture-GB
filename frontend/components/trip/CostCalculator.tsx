@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { TripState } from "@/lib/trip-types";
 import { Destination } from "@/lib/types";
-import { pricingTable, ActivityKey } from "@/lib/mock-data/pricing";
+import { pricingTable, ActivityKey } from "@/lib/pricing";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
 
 interface CostCalculatorProps {
@@ -17,7 +17,7 @@ interface CostCalculatorProps {
  * splits into per-seat (Shared) vs per-vehicle-with-capacity (Private,
  * 4x4 Jeep), activities are priced individually rather than a flat fee,
  * and entry fees are driven by the actual selected destinations — all
- * against the mock pricing table, recalculating on every trip change.
+ * against the pricing config, recalculating on every trip change.
  */
 export default function CostCalculator({ trip, destinations }: CostCalculatorProps) {
   const t = useTranslations("tripBuilder.summary");

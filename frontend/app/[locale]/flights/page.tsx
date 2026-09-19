@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getFlights } from "@/lib/mock-data";
+import { getFlights } from "@/lib/api";
 import FlightCard from "@/components/flights/FlightCard";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,8 +22,8 @@ export default async function FlightsPage() {
       </header>
 
       <div className="mx-auto mb-8 max-w-2xl rounded-card border border-dashed border-cream-400 bg-cream-100 p-5 text-center">
-        <p className="font-semibold text-forest-800">{t("unavailableTitle")}</p>
-        <p className="mt-1 text-sm text-forest-600">{t("unavailableBody")}</p>
+        <p className="font-semibold text-forest-800">{t("freshnessTitle")}</p>
+        <p className="mt-1 text-sm text-forest-600">{t("freshnessBody")}</p>
       </div>
 
       <div className="mx-auto max-w-2xl space-y-4">

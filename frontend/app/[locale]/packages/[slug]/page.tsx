@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { packages, getPackageBySlug } from "@/lib/mock-data";
+import { getPackages, getPackageBySlug } from "@/lib/api";
+import { placeholderImage } from "@/lib/utils/image";
+import { resolveMediaUrl } from "@/lib/utils/media";
 import LineSidebar from "@/components/shared/LineSidebar";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
 import ImageGallery from "@/components/shared/ImageGallery";
 import GlareHover from "@/components/shared/GlareHover";
 import { Link } from "@/i18n/navigation";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const packages = await getPackages();
   return packages.map((p) => ({ slug: p.slug }));
 }
 
@@ -25,7 +28,7 @@ export async function generateMetadata({
   return {
     title: pkg.title,
     description: pkg.highlights.join(", "),
-    openGraph: { title: pkg.title, images: pkg.images.slice(0, 1) },
+    openGraph: { title: pkg.title, images: pkg.images.slice(0, 1).map(resolveMediaUrl) },
   };
 }
 
@@ -65,7 +68,14 @@ export default async function PackageDetailPage({
       </header>
 
       <div className="mb-10 relative aspect-[16/7] w-full overflow-hidden rounded-card">
-        <Image src={pkg.images[0]} alt={pkg.title} fill sizes="100vw" priority className="object-cover" />
+        <Image
+          src={pkg.images[0] ? resolveMediaUrl(pkg.images[0]) : placeholderImage(pkg.slug, 1600, 700)}
+          alt={pkg.title}
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover"
+        />
       </div>
 
       <div className="flex gap-10">

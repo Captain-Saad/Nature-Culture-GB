@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import {
-  destinations,
+  getDestinations,
   getDestinationBySlug,
   getHotelsByIds,
   getDestinationsByIds,
-} from "@/lib/mock-data";
+} from "@/lib/api";
+import { resolveMediaUrl } from "@/lib/utils/media";
 import ImageGallery from "@/components/shared/ImageGallery";
 import LineSidebar from "@/components/shared/LineSidebar";
 import MapSection from "@/components/shared/MapSection";
@@ -15,7 +16,8 @@ import HotelCard from "@/components/hotels/HotelCard";
 import DestinationCard from "@/components/destinations/DestinationCard";
 import AddToTripButton from "@/components/destinations/AddToTripButton";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const destinations = await getDestinations();
   return destinations.map((d) => ({ slug: d.slug }));
 }
 
@@ -34,7 +36,7 @@ export async function generateMetadata({
     openGraph: {
       title: destination.name,
       description: destination.shortDescription,
-      images: destination.images.slice(0, 1),
+      images: destination.images.slice(0, 1).map(resolveMediaUrl),
     },
   };
 }

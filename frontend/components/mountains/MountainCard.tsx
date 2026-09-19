@@ -2,6 +2,8 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Mountain } from "@/lib/types";
+import { placeholderImage } from "@/lib/utils/image";
+import { resolveMediaUrl } from "@/lib/utils/media";
 
 const DIFFICULTY_STYLES: Record<string, string> = {
   Easy: "bg-forest-100 text-forest-800",
@@ -20,7 +22,11 @@ export default function MountainCard({ mountain }: { mountain: Mountain }) {
     >
       <div className="relative aspect-[4/3] w-full">
         <Image
-          src={mountain.images[0]}
+          src={
+            mountain.images[0]
+              ? resolveMediaUrl(mountain.images[0])
+              : placeholderImage(mountain.slug, 600, 450)
+          }
           alt={mountain.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"

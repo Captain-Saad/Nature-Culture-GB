@@ -30,12 +30,38 @@ h4,
   font-family: var(--font-display), Georgia, serif;
 }
 
+/*
+ * Nastaliq and Arabic-script glyphs extend well above/below the Latin
+ * em-box (stacked diacritics, Nastaliq's diagonal flow) — the tight
+ * line-heights tuned for the Latin fonts clip their tops/bottoms, which
+ * reads as text "spilling out of" its container. Both scripts need
+ * noticeably more vertical room than Fraunces/Manrope do.
+ */
 [dir="rtl"] h1,
 [dir="rtl"] h2,
 [dir="rtl"] h3,
 [dir="rtl"] h4,
 [dir="rtl"] .font-display {
   font-family: var(--font-display-ur), var(--font-display), serif;
+  line-height: 1.8;
+  /*
+   * Nastaliq's diagonal flow overshoots its own line box (long tails,
+   * swooping finals) more than the line-height above accounts for —
+   * this reserves extra room below the text itself so the next element
+   * (a subtitle, a paragraph) doesn't read as crowded against it, without
+   * having to hunt down every heading's sibling margin individually.
+   */
+  padding-bottom: 0.15em;
+  /*
+   * Nastaliq's letterforms join diagonally; any added tracking (several
+   * headings use tracking-wide for the Latin uppercase treatment) breaks
+   * that joining and looks like stray gaps rather than emphasis.
+   */
+  letter-spacing: normal;
+}
+
+[dir="rtl"] body {
+  line-height: 1.8;
 }
 
 @layer utilities {

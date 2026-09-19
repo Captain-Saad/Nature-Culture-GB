@@ -2,6 +2,8 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import TiltedCard from "@/components/shared/TiltedCard";
 import { Destination } from "@/lib/types";
+import { placeholderImage } from "@/lib/utils/image";
+import { resolveMediaUrl } from "@/lib/utils/media";
 
 export default function DestinationCard({ destination }: { destination: Destination }) {
   const t = useTranslations("common");
@@ -9,7 +11,11 @@ export default function DestinationCard({ destination }: { destination: Destinat
   return (
     <Link href={`/destinations/${destination.slug}`} className="block">
       <TiltedCard
-        imageSrc={destination.images[0]}
+        imageSrc={
+          destination.images[0]
+            ? resolveMediaUrl(destination.images[0])
+            : placeholderImage(destination.slug, 600, 600)
+        }
         altText={destination.name}
         overlay={
           <div>

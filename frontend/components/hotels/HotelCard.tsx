@@ -2,6 +2,8 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Hotel } from "@/lib/types";
+import { placeholderImage } from "@/lib/utils/image";
+import { resolveMediaUrl } from "@/lib/utils/media";
 import StarRating from "@/components/shared/StarRating";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
 import BookingButton from "@/components/shared/BookingButton";
@@ -29,7 +31,7 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
     <article className="flex flex-col overflow-hidden rounded-card bg-white shadow-card transition-shadow hover:shadow-card-lg">
       <div className="relative aspect-[4/3] w-full">
         <Image
-          src={hotel.images[0]}
+          src={hotel.images[0] ? resolveMediaUrl(hotel.images[0]) : placeholderImage(hotel.slug, 600, 450)}
           alt={hotel.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"

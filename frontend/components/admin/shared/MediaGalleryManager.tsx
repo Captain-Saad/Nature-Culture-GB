@@ -171,6 +171,17 @@ export default function MediaGalleryManager({
     setDragRow(null);
   }
 
+  // The public site always shows images[0] as the card/listing thumbnail
+  // (there's no separate thumbnail field) — this promotes an image to that
+  // position instead of making the admin figure that out via drag-reorder.
+  function setAsThumbnail(row: Row) {
+    if (row.kind !== "image" || row.index === 0) return;
+    const list = [...images];
+    const [moved] = list.splice(row.index, 1);
+    list.unshift(moved);
+    apply({ images: list });
+  }
+
   return (
     <div>
       {label && <label className="text-sm font-semibold text-forest-800">{label}</label>}
@@ -221,8 +232,22 @@ export default function MediaGalleryManager({
                 ×
               </button>
 
-              <span className="absolute bottom-1 left-1 rounded bg-navy-900/70 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-white">
-                {row.kind === "video" ? "Video" : `Img ${row.index + 1}`}
+              {row.kind === "image" && row.index !== 0 && (
+                <button
+                  type="button"
+                  onClick={() => setAsThumbnail(row)}
+                  className="absolute left-1 top-1 rounded bg-navy-900/70 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-white opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                >
+                  Set as thumbnail
+                </button>
+              )}
+
+              <span
+                className={`absolute bottom-1 left-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase text-white ${
+                  row.kind === "image" && row.index === 0 ? "bg-orange-600" : "bg-navy-900/70"
+                }`}
+              >
+                {row.kind === "video" ? "Video" : row.index === 0 ? "Thumbnail" : `Img ${row.index + 1}`}
               </span>
             </div>
           ))}
@@ -284,7 +309,7 @@ export default function MediaGalleryManager({
 
       <p className="mt-1 text-xs text-forest-500">
         {helpText ??
-          `JPG, PNG or WebP up to ${formatMb(IMAGE_MAX_BYTES)}; MP4 video up to ${formatMb(videoMaxBytes)}. Drag thumbnails to reorder within images or videos.`}
+          `JPG, PNG or WebP up to ${formatMb(IMAGE_MAX_BYTES)}; MP4 video up to ${formatMb(videoMaxBytes)}. The first image is used as the thumbnail everywhere this shows up on the site — drag images to reorder, or hover one and click "Set as thumbnail".`}
       </p>
     </div>
   );

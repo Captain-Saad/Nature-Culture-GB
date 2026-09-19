@@ -2,6 +2,8 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { TourPackage } from "@/lib/types";
+import { placeholderImage } from "@/lib/utils/image";
+import { resolveMediaUrl } from "@/lib/utils/media";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
 
 export default function PackageCard({ pkg }: { pkg: TourPackage }) {
@@ -11,7 +13,7 @@ export default function PackageCard({ pkg }: { pkg: TourPackage }) {
     <article className="flex flex-col overflow-hidden rounded-card bg-white shadow-card transition-shadow hover:shadow-card-lg">
       <div className="relative aspect-[16/10] w-full">
         <Image
-          src={pkg.images[0]}
+          src={pkg.images[0] ? resolveMediaUrl(pkg.images[0]) : placeholderImage(pkg.slug, 640, 400)}
           alt={pkg.title}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"

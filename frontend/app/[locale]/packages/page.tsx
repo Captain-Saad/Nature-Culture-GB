@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getPackages } from "@/lib/mock-data";
+import { getPackages } from "@/lib/api";
 import PackageCard from "@/components/packages/PackageCard";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 

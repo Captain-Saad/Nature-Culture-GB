@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getMountains } from "@/lib/mock-data";
+import { getMountains } from "@/lib/api";
 import MountainCard from "@/components/mountains/MountainCard";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 

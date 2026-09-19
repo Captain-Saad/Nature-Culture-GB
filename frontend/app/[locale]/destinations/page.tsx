@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getDestinations } from "@/lib/mock-data";
+import { getDestinations } from "@/lib/api";
 import DestinationsClient from "@/components/destinations/DestinationsClient";
 
 export async function generateMetadata(): Promise<Metadata> {

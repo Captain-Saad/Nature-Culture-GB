@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { hotels, getHotelBySlug } from "@/lib/mock-data";
+import { getHotels, getHotelBySlug } from "@/lib/api";
+import { resolveMediaUrl } from "@/lib/utils/media";
 import ImageGallery from "@/components/shared/ImageGallery";
 import MapSection from "@/components/shared/MapSection";
 import StarRating from "@/components/shared/StarRating";
@@ -9,7 +10,8 @@ import EstimatedBadge from "@/components/shared/EstimatedBadge";
 import BookingButton from "@/components/shared/BookingButton";
 import HotelRoomsSection from "@/components/hotels/HotelRoomsSection";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const hotels = await getHotels();
   return hotels.map((h) => ({ slug: h.slug }));
 }
 
@@ -25,7 +27,7 @@ export async function generateMetadata({
   return {
     title: hotel.name,
     description: `${hotel.name} in ${hotel.city} — ${hotel.category} category, ${hotel.starRating}-star.`,
-    openGraph: { title: hotel.name, images: hotel.images.slice(0, 1) },
+    openGraph: { title: hotel.name, images: hotel.images.slice(0, 1).map(resolveMediaUrl) },
   };
 }
 

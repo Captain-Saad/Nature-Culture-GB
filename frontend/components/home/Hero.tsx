@@ -8,7 +8,6 @@ import { useRouter } from "@/i18n/navigation";
 import SearchBar from "@/components/shared/SearchBar";
 import GlareHover from "@/components/shared/GlareHover";
 import { Link } from "@/i18n/navigation";
-import { placeholderImage } from "@/lib/utils/image";
 import { resolveMediaUrl, canUseNextImage } from "@/lib/utils/media";
 
 interface HeroProps {
@@ -30,10 +29,23 @@ export default function Hero({ headline, subtext, backgroundImage, backgroundVid
   // The effect below upgrades to video only where it's appropriate.
   const [playVideo, setPlayVideo] = useState(false);
 
-  const posterUrl = backgroundImage
-    ? resolveMediaUrl(backgroundImage)
-    : placeholderImage("hero-mountains", 1920, 1080);
-  const videoUrl = backgroundVideo ? resolveMediaUrl(backgroundVideo) : null;
+  // True only when an admin hasn't set anything in Site Settings -- i.e.
+  // we're showing our own bundled hero-background.mp4, a bright,
+  // high-key daytime shot. That's the one case where we know the
+  // footage is bright enough to need the stronger overlay below;
+  // whatever an admin uploads later could be dark already, so it keeps
+  // the original, lighter treatment instead of inheriting this one.
+  const isDefaultBackground = !backgroundImage && !backgroundVideo;
+
+  const posterUrl = backgroundImage ? resolveMediaUrl(backgroundImage) : "/images/hero-poster.jpg";
+  // An admin who sets only a custom image (no video) wants a static hero --
+  // our bundled video is only the default when NEITHER is set, not just
+  // whenever backgroundVideo happens to be empty.
+  const videoUrl = backgroundVideo
+    ? resolveMediaUrl(backgroundVideo)
+    : isDefaultBackground
+      ? "/videos/hero-background.mp4"
+      : null;
 
   useEffect(() => {
     if (!videoUrl) {
@@ -110,21 +122,40 @@ export default function Hero({ headline, subtext, backgroundImage, backgroundVid
         <img src={posterUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />
       )}
 
-      {/* Keeps the headline readable over any image or video an admin sets. */}
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-900/70 via-navy-900/50 to-navy-900" />
+      {isDefaultBackground ? (
+        // The bundled hero video is a bright, high-key daytime shot (blue
+        // sky, white snow) -- the single linear wash below isn't enough
+        // contrast for white/orange text against that. Three layers: a
+        // flat wash for a reliable minimum everywhere, a radial layer
+        // concentrating extra darkness specifically behind the headline
+        // (top-center, where the sky is brightest), and a bottom fade so
+        // the video meets the next section cleanly instead of a hard cut.
+        <>
+          <div className="absolute inset-0 bg-navy-900/50" aria-hidden="true" />
+          <div
+            className="absolute inset-0 bg-[radial-gradient(ellipse_80%_55%_at_50%_12%,rgba(11,21,31,0.65),transparent_65%)]"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-900/80 via-transparent to-transparent" aria-hidden="true" />
+        </>
+      ) : (
+        // Keeps the headline readable over whatever image or video an admin sets --
+        // unchanged from before, since we don't know that content's brightness.
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-900/70 via-navy-900/50 to-navy-900" />
+      )}
 
       <div className="container-content relative flex min-h-[85vh] flex-col items-center justify-center py-24 text-center text-cream-50">
         <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
           {headline ? (
-            <span data-hero-line className="block overflow-hidden">
+            <span data-hero-line className="block overflow-hidden py-1">
               {headline}
             </span>
           ) : (
             <>
-              <span data-hero-line className="block overflow-hidden">
+              <span data-hero-line className="block overflow-hidden py-1">
                 {t("title")}
               </span>
-              <span data-hero-line className="block overflow-hidden text-orange-300">
+              <span data-hero-line className="mt-1 block overflow-hidden py-1 text-orange-300 rtl:mt-3">
                 {t("titleLine2")}
               </span>
             </>

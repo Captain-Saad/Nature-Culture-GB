@@ -18,9 +18,8 @@ export interface Destination {
   name: string;
   region: Region;
   images: string[];
-  // Optional across every gallery type: mock data predates video support and
-  // externally seeded rows may have none. Renderers merge images + videos via
-  // lib/utils/media.ts.
+  // Optional across every gallery type: rows may not have any videos yet.
+  // Renderers merge images + videos via lib/utils/media.ts.
   videos?: string[];
   shortDescription: string;
   description: string;
@@ -118,33 +117,52 @@ export interface TourPackage {
   lastUpdated: string;
 }
 
+export interface WeatherForecastDay {
+  /** ISO date ("2026-09-20") -- format per-locale at render time. */
+  date: string;
+  tempHighC: number | null;
+  tempLowC: number | null;
+  /** Stable key into the `weather.conditions` messages, e.g. "clearSky". */
+  condition: string | null;
+  icon: string | null;
+  precipitationProbability: number | null;
+}
+
 export interface WeatherEntry {
-  city: Region;
-  isLive: false;
+  /** URL-safe id, e.g. "skardu" -- matches GET /weather/:location. */
+  location: string;
+  /** Display name, e.g. "Hunza (Karimabad)" or "Deosai Plains". */
+  label: string;
+  /** null for locations that aren't one of the ten administrative regions (e.g. Deosai). */
+  region: Region | null;
+  available: boolean;
   tempC: number | null;
   condition: string | null;
+  icon: string | null;
   humidity: number | null;
   windKph: number | null;
-  forecast: {
-    day: string;
-    tempHighC: number | null;
-    tempLowC: number | null;
-    condition: string | null;
-  }[];
+  precipitationMm: number | null;
+  forecast: WeatherForecastDay[];
+  message: string | null;
   lastUpdated: string | null;
 }
 
-export type FlightStatus = "Scheduled" | "Delayed" | "Cancelled" | "Arrived";
+export type FlightStatus = "Scheduled" | "Delayed" | "Cancelled" | "Arrived" | "Departed";
 
 export interface Flight {
+  /** Route leg id, e.g. "isb-kdu" -- matches GET /flights. */
   id: string;
-  flightNumber: string;
   airline: string;
   origin: string;
   destination: string;
-  isLive: false;
+  available: boolean;
+  /** null when `available` is false. */
+  flightNumber: string | null;
   status: FlightStatus | null;
   scheduledDeparture: string | null;
+  estimatedDeparture: string | null;
+  message: string | null;
+  /** When this cached data was last successfully refreshed -- not real-time, see FlightCard. */
   lastUpdated: string | null;
 }
 

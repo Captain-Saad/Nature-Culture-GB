@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { useAdminApi } from "@/lib/admin/useAdminApi";
 import ConfirmDialog from "@/components/admin/shared/ConfirmDialog";
 import type { AdminDestination } from "@/lib/admin/types";
+import { resolveMediaUrl } from "@/lib/utils/media";
 
 export default function DestinationsList() {
   const { request } = useAdminApi();
@@ -93,7 +94,7 @@ export default function DestinationsList() {
                     <div className="relative h-12 w-16 overflow-hidden rounded-md bg-cream-100">
                       {d.images[0] && (
                         // eslint-disable-next-line @next/next/no-img-element -- arbitrary admin-managed URLs
-                        <img src={d.images[0]} alt="" className="h-full w-full object-cover" />
+                        <img src={resolveMediaUrl(d.images[0])} alt="" className="h-full w-full object-cover" />
                       )}
                     </div>
                   </td>

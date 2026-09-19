@@ -1,7 +1,7 @@
 {
   "meta": {
     "siteName": "Nature & Culture GB",
-    "tagline": "Discover the Mountains. Experience the Culture."
+    "tagline": "Discover the Nature. Experience the Culture."
   },
   "nav": {
     "home": "Home",
@@ -73,7 +73,7 @@
   },
   "home": {
     "hero": {
-      "title": "Discover the Mountains.",
+      "title": "Discover the Nature.",
       "titleLine2": "Experience the Culture.",
       "subtitle": "Plan your journey through Gilgit-Baltistan — Pakistan's crown of peaks, valleys and living heritage.",
       "ctaExplore": "Explore GB",
@@ -257,21 +257,57 @@
   "weather": {
     "pageTitle": "Weather",
     "pageSubtitle": "Conditions across Gilgit-Baltistan",
-    "forecast": "5-Day Forecast",
+    "forecast": "7-Day Forecast",
     "humidity": "Humidity",
-    "wind": "Wind"
+    "wind": "Wind",
+    "precipitationChance": "Chance of rain",
+    "conditions": {
+      "clearSky": "Clear sky",
+      "mainlyClear": "Mainly clear",
+      "partlyCloudy": "Partly cloudy",
+      "overcast": "Overcast",
+      "fog": "Fog",
+      "depositingRimeFog": "Freezing fog",
+      "lightDrizzle": "Light drizzle",
+      "moderateDrizzle": "Moderate drizzle",
+      "denseDrizzle": "Dense drizzle",
+      "lightFreezingDrizzle": "Light freezing drizzle",
+      "denseFreezingDrizzle": "Dense freezing drizzle",
+      "slightRain": "Light rain",
+      "moderateRain": "Moderate rain",
+      "heavyRain": "Heavy rain",
+      "lightFreezingRain": "Light freezing rain",
+      "heavyFreezingRain": "Heavy freezing rain",
+      "slightSnowFall": "Light snow",
+      "moderateSnowFall": "Moderate snow",
+      "heavySnowFall": "Heavy snow",
+      "snowGrains": "Snow grains",
+      "slightRainShowers": "Light rain showers",
+      "moderateRainShowers": "Rain showers",
+      "violentRainShowers": "Heavy rain showers",
+      "slightSnowShowers": "Light snow showers",
+      "heavySnowShowers": "Heavy snow showers",
+      "thunderstorm": "Thunderstorm",
+      "thunderstormSlightHail": "Thunderstorm with hail",
+      "thunderstormHeavyHail": "Severe thunderstorm with hail",
+      "unknown": "Unknown"
+    }
   },
   "flights": {
     "pageTitle": "Flights",
     "pageSubtitle": "Islamabad ↔ Skardu and Gilgit routes",
     "flightNo": "Flight No.",
+    "departureLabel": "Departure",
     "route": "Route",
     "scheduled": "Scheduled",
     "delayed": "Delayed",
     "cancelled": "Cancelled",
     "arrived": "Arrived",
-    "unavailableTitle": "Live flight data unavailable",
-    "unavailableBody": "Flights in this region are highly weather-dependent and schedules change often. We recommend confirming directly with the airline before travel."
+    "departed": "Departed",
+    "updated": "Updated",
+    "unavailableBadge": "Unavailable",
+    "freshnessTitle": "Flight status (updated every few hours)",
+    "freshnessBody": "This isn't a live feed — flights in this region are highly weather-dependent and schedules change often. We recommend confirming directly with the airline before travel."
   },
   "travelUpdates": {
     "pageTitle": "Travel Updates",
@@ -279,9 +315,7 @@
     "open": "Open",
     "closed": "Closed",
     "restricted": "Restricted",
-    "source": "Source",
-    "mockDataTitle": "Illustrative data",
-    "mockDataBody": "These reports are placeholder/mock content for now. Live route and situation updates will replace them in a later phase."
+    "source": "Source"
   },
   "reviews": {
     "pageTitle": "Reviews",

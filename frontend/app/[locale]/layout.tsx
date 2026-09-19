@@ -42,7 +42,7 @@ export function generateStaticParams() {
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: {
-      default: "Nature & Culture GB — Discover the Mountains, Experience the Culture",
+      default: "Nature & Culture GB — Discover the Nature, Experience the Culture",
       template: "%s | Nature & Culture GB",
     },
     description:

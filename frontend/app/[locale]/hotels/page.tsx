@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getHotels } from "@/lib/mock-data";
+import { getHotels } from "@/lib/api";
 import HotelsClient from "@/components/hotels/HotelsClient";
 
 export async function generateMetadata(): Promise<Metadata> {
