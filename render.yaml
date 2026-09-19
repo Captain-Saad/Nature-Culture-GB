@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ncgb-backend
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # All of the below have no default and must be filled in from the
+      # Render dashboard after the first deploy (Environment tab) --
+      # `sync: false` means "prompt for this, don't source it from a
+      # linked env var group or commit a value here."
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: AVIATIONSTACK_API_KEY
+        sync: false
