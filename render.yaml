@@ -5,7 +5,12 @@ services:
     plan: free
     region: singapore
     rootDir: backend
-    buildCommand: npm install && npm run build
+    # --include=dev overrides NODE_ENV=production (set below) for this
+    # install -- without it, npm skips devDependencies at build time,
+    # which is exactly where typescript and every @types/* package live
+    # that `tsc` needs to compile. The compiled output has no trace of
+    # them; this only affects what's present during the build.
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /health
     autoDeploy: true
