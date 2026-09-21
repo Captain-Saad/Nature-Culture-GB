@@ -260,19 +260,34 @@ model TripLead {
   // Phone or email, whichever the lead gave — kept as one free-text field
   // per backend_prompt's "contact" (singular).
   contact String
+  // Optional second contact channel -- the cart checkout form (Phase 8)
+  // collects both a phone/WhatsApp number (as `contact`) and an email.
+  email   String?
 
-  startingCity String
+  // Plan-My-Trip wizard fields (Phase 4). Optional: the cart checkout
+  // flow (Phase 8) is a second, structurally different way a TripLead
+  // gets created and doesn't collect a fixed itinerary shape, only the
+  // cart below plus preferredDates/notes.
+  startingCity String?
   // Matches the frontend TripBuilderForm's TripState.destinationIds field
   // name directly, so mapping the POST payload in Phase 4 is a pass-through.
   destinationIds String[]
-  days           Int
-  travelers      Int
+  days           Int?
+  travelers      Int?
   budgetPKR      Int?
   // "Budget" | "Mid-Range" | "Luxury" — validated by Zod (src/lib/enums.ts)
   hotelCategory  String?
   // "Shared" | "Private" | "4x4 Jeep" — validated by Zod (src/lib/enums.ts)
   transport      String?
   activities     String[]
+
+  // Cart checkout flow (Phase 8): the full mixed-type cart (destinations,
+  // packages, hotel rooms with dates/nights/guests) as the frontend built
+  // it, stored as-is so the admin UI can render it without a lossy
+  // re-normalization into the wizard's fixed columns above.
+  cartItems      Json?
+  preferredDates String?
+  notes          String? @db.Text
 
   status    TripLeadStatus @default(NEW)
   createdAt DateTime       @default(now())
