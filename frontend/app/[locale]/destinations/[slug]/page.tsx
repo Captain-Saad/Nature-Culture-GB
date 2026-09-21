@@ -14,7 +14,7 @@ import MapSection from "@/components/shared/MapSection";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
 import HotelCard from "@/components/hotels/HotelCard";
 import DestinationCard from "@/components/destinations/DestinationCard";
-import AddToTripButton from "@/components/destinations/AddToTripButton";
+import AddToTripButton from "@/components/shared/AddToTripButton";
 
 export async function generateStaticParams() {
   const destinations = await getDestinations();
@@ -77,7 +77,17 @@ export default async function DestinationDetailPage({
         </h1>
         <p className="mt-2 max-w-2xl text-forest-600">{destination.shortDescription}</p>
         <div className="mt-5">
-          <AddToTripButton destinationId={destination.id} />
+          <AddToTripButton
+            kind="destination"
+            item={{
+              id: destination.id,
+              slug: destination.slug,
+              name: destination.name,
+              image: destination.images[0] ?? null,
+              region: destination.region,
+              estimatedPricePKR: destination.approxCostPKR,
+            }}
+          />
         </div>
       </header>
 

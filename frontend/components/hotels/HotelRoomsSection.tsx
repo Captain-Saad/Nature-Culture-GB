@@ -8,6 +8,8 @@ import type { HotelRoom } from "@/lib/types";
 
 interface HotelRoomsSectionProps {
   rooms: HotelRoom[];
+  hotelId: string;
+  hotelSlug: string;
   hotelName: string;
   cancellationPolicy: string;
   lastUpdated: string;
@@ -15,6 +17,8 @@ interface HotelRoomsSectionProps {
 
 export default function HotelRoomsSection({
   rooms,
+  hotelId,
+  hotelSlug,
   hotelName,
   cancellationPolicy,
   lastUpdated,
@@ -53,6 +57,8 @@ export default function HotelRoomsSection({
           open
           onClose={() => setSelectedRoom(null)}
           room={selectedRoom}
+          hotelId={hotelId}
+          hotelSlug={hotelSlug}
           hotelName={hotelName}
           cancellationPolicy={cancellationPolicy}
           lastUpdated={lastUpdated}

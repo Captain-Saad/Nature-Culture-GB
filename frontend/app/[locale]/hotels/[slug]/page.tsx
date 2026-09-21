@@ -67,6 +67,8 @@ export default async function HotelDetailPage({
             <h2 className="font-display text-xl font-bold text-forest-900">{t("rooms")}</h2>
             <HotelRoomsSection
               rooms={hotel.rooms}
+              hotelId={hotel.id}
+              hotelSlug={hotel.slug}
               hotelName={hotel.name}
               cancellationPolicy={hotel.cancellationPolicy}
               lastUpdated={hotel.lastUpdated}

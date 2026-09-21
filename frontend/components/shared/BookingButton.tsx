@@ -4,9 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Modal from "./Modal";
 import GlareHover from "./GlareHover";
-
-const PHONE_NUMBERS = ["0300 8153848", "0355 5400555"];
-const WHATSAPP_NUMBER = "923008153848";
+import { PHONE_NUMBERS, WHATSAPP_NUMBER } from "@/lib/businessContact";
 
 interface BookingButtonProps {
   label?: string;

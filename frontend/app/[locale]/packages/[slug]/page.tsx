@@ -8,8 +8,7 @@ import { resolveMediaUrl } from "@/lib/utils/media";
 import LineSidebar from "@/components/shared/LineSidebar";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
 import ImageGallery from "@/components/shared/ImageGallery";
-import GlareHover from "@/components/shared/GlareHover";
-import { Link } from "@/i18n/navigation";
+import AddToTripButton from "@/components/shared/AddToTripButton";
 
 export async function generateStaticParams() {
   const packages = await getPackages();
@@ -64,6 +63,19 @@ export default async function PackageDetailPage({
             PKR {pkg.estimatedPricePKR.min.toLocaleString()}–{pkg.estimatedPricePKR.max.toLocaleString()}
           </span>
           <EstimatedBadge lastUpdated={pkg.lastUpdated} />
+        </div>
+        <div className="mt-5">
+          <AddToTripButton
+            kind="package"
+            item={{
+              id: pkg.id,
+              slug: pkg.slug,
+              name: pkg.title,
+              image: pkg.images[0] ?? null,
+              durationDays: pkg.durationDays,
+              estimatedPricePKR: pkg.estimatedPricePKR,
+            }}
+          />
         </div>
       </header>
 
@@ -150,14 +162,17 @@ export default async function PackageDetailPage({
             </div>
           </section>
 
-          <GlareHover className="inline-block rounded-full">
-            <Link
-              href="/plan-my-trip"
-              className="block rounded-full bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-card transition-colors hover:bg-orange-600"
-            >
-              {tc("bookNow")}
-            </Link>
-          </GlareHover>
+          <AddToTripButton
+            kind="package"
+            item={{
+              id: pkg.id,
+              slug: pkg.slug,
+              name: pkg.title,
+              image: pkg.images[0] ?? null,
+              durationDays: pkg.durationDays,
+              estimatedPricePKR: pkg.estimatedPricePKR,
+            }}
+          />
         </div>
       </div>
     </div>

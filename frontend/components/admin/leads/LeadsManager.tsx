@@ -21,6 +21,156 @@ function formatDate(iso: string) {
 }
 
 /**
+ * A TripLead can come from either the Plan-My-Trip wizard (startingCity/
+ * days/travelers/destinationIds/activities, cartItems empty) or the cart
+ * checkout flow (cartItems populated, those wizard fields null) -- shows
+ * whichever one actually has data instead of a fixed set of fields that's
+ * half blank either way.
+ */
+function LeadDetail({
+  lead,
+  destinationNames,
+}: {
+  lead: AdminTripLead;
+  destinationNames: Record<string, string>;
+}) {
+  // `travelers` is deliberately excluded here -- both the wizard and the
+  // cart checkout form collect it, so it can't distinguish which one this
+  // lead came from (that was showing an empty "Plan My Trip wizard"
+  // section, full of "Not given"/"None selected", on every cart lead that
+  // happened to include a traveler count).
+  const hasWizardData = lead.startingCity !== null || lead.days !== null || lead.destinationIds.length > 0;
+  const hasCartData = lead.cartItems.length > 0;
+
+  return (
+    <div className="space-y-4">
+      {(lead.email || lead.preferredDates || lead.notes || lead.travelers !== null) && (
+        <dl className="grid gap-3 sm:grid-cols-2">
+          {lead.email && (
+            <div>
+              <dt className="text-xs font-semibold uppercase text-forest-500">Email</dt>
+              <dd>{lead.email}</dd>
+            </div>
+          )}
+          {lead.preferredDates && (
+            <div>
+              <dt className="text-xs font-semibold uppercase text-forest-500">Preferred Dates</dt>
+              <dd>{lead.preferredDates}</dd>
+            </div>
+          )}
+          {lead.travelers !== null && hasCartData && (
+            <div>
+              <dt className="text-xs font-semibold uppercase text-forest-500">Travelers</dt>
+              <dd>{lead.travelers}</dd>
+            </div>
+          )}
+          {lead.notes && (
+            <div className="sm:col-span-2">
+              <dt className="text-xs font-semibold uppercase text-forest-500">Notes</dt>
+              <dd className="whitespace-pre-wrap">{lead.notes}</dd>
+            </div>
+          )}
+        </dl>
+      )}
+
+      {hasCartData && (
+        <div>
+          <p className="text-xs font-semibold uppercase text-forest-500">Trip Cart</p>
+          <ul className="mt-2 space-y-2">
+            {lead.cartItems.map((item, i) => (
+              <li key={i} className="rounded-lg bg-cream-100 px-3 py-2">
+                {item.type === "destination" && (
+                  <>
+                    <span className="font-semibold text-forest-900">{item.name}</span>{" "}
+                    <span className="text-forest-500">— Destination · {item.region}</span>
+                    {item.estimatedPricePKR && (
+                      <span className="text-forest-500">
+                        {" "}
+                        · PKR {item.estimatedPricePKR.min.toLocaleString()}–{item.estimatedPricePKR.max.toLocaleString()}
+                      </span>
+                    )}
+                  </>
+                )}
+                {item.type === "package" && (
+                  <>
+                    <span className="font-semibold text-forest-900">{item.name}</span>{" "}
+                    <span className="text-forest-500">— Package · {item.durationDays} days</span>
+                    {item.estimatedPricePKR && (
+                      <span className="text-forest-500">
+                        {" "}
+                        · PKR {item.estimatedPricePKR.min.toLocaleString()}–{item.estimatedPricePKR.max.toLocaleString()}
+                      </span>
+                    )}
+                  </>
+                )}
+                {item.type === "hotelRoom" && (
+                  <>
+                    <span className="font-semibold text-forest-900">
+                      {item.hotelName} — {item.roomType}
+                    </span>{" "}
+                    <span className="text-forest-500">
+                      · Check-in {item.checkIn} · {item.nights} night{item.nights === 1 ? "" : "s"} · {item.guests} guest
+                      {item.guests === 1 ? "" : "s"}
+                    </span>
+                    {item.estimatedPricePKR && (
+                      <span className="text-forest-500">
+                        {" "}
+                        · PKR {(item.estimatedPricePKR * item.nights).toLocaleString()}
+                      </span>
+                    )}
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {hasWizardData && (
+        <div>
+          {hasCartData && <p className="mb-2 text-xs font-semibold uppercase text-forest-500">Plan My Trip wizard</p>}
+          <dl className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <dt className="text-xs font-semibold uppercase text-forest-500">Starting City</dt>
+              <dd>{lead.startingCity ?? "Not given"}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase text-forest-500">Trip Length</dt>
+              <dd>
+                {lead.days ?? "?"} day{lead.days === 1 ? "" : "s"}, {lead.travelers ?? "?"} traveller
+                {lead.travelers === 1 ? "" : "s"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase text-forest-500">Budget</dt>
+              <dd>{lead.budgetPKR ? `PKR ${lead.budgetPKR.toLocaleString()}` : "Not given"}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase text-forest-500">Hotel / Transport</dt>
+              <dd>
+                {lead.hotelCategory ?? "Any"} / {lead.transport ?? "Any"}
+              </dd>
+            </div>
+            <div className="sm:col-span-2">
+              <dt className="text-xs font-semibold uppercase text-forest-500">Destinations</dt>
+              <dd>
+                {lead.destinationIds.length > 0
+                  ? lead.destinationIds.map((id) => destinationNames[id] ?? id).join(", ")
+                  : "None selected"}
+              </dd>
+            </div>
+            <div className="sm:col-span-2">
+              <dt className="text-xs font-semibold uppercase text-forest-500">Activities</dt>
+              <dd>{lead.activities.length > 0 ? lead.activities.join(", ") : "None selected"}</dd>
+            </div>
+          </dl>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
  * Trip leads and contact messages in one screen, since both are inbound
  * enquiries an admin works through the same way. Neither is authored here --
  * they arrive from the public forms -- so there's no create or delete, only
@@ -204,6 +354,9 @@ export default function LeadsManager() {
                     <p className="mt-1 text-sm text-forest-600">
                       {isLead ? lead.contact : message.email}
                       {!isLead && message.subject ? ` — ${message.subject}` : ""}
+                      {isLead && lead.cartItems.length > 0
+                        ? ` · ${lead.cartItems.length} item${lead.cartItems.length === 1 ? "" : "s"} in trip cart`
+                        : ""}
                     </p>
                     <p className="mt-1 text-xs text-forest-500">{formatDate(row.createdAt)}</p>
                   </div>
@@ -240,41 +393,7 @@ export default function LeadsManager() {
                 {isOpen && (
                   <div className="mt-4 border-t border-cream-200 pt-4 text-sm text-forest-700">
                     {isLead ? (
-                      <dl className="grid gap-3 sm:grid-cols-2">
-                        <div>
-                          <dt className="text-xs font-semibold uppercase text-forest-500">Starting City</dt>
-                          <dd>{lead.startingCity}</dd>
-                        </div>
-                        <div>
-                          <dt className="text-xs font-semibold uppercase text-forest-500">Trip Length</dt>
-                          <dd>
-                            {lead.days} day{lead.days === 1 ? "" : "s"}, {lead.travelers} traveller
-                            {lead.travelers === 1 ? "" : "s"}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt className="text-xs font-semibold uppercase text-forest-500">Budget</dt>
-                          <dd>{lead.budgetPKR ? `PKR ${lead.budgetPKR.toLocaleString()}` : "Not given"}</dd>
-                        </div>
-                        <div>
-                          <dt className="text-xs font-semibold uppercase text-forest-500">Hotel / Transport</dt>
-                          <dd>
-                            {lead.hotelCategory ?? "Any"} / {lead.transport ?? "Any"}
-                          </dd>
-                        </div>
-                        <div className="sm:col-span-2">
-                          <dt className="text-xs font-semibold uppercase text-forest-500">Destinations</dt>
-                          <dd>
-                            {lead.destinationIds.length > 0
-                              ? lead.destinationIds.map((id) => destinationNames[id] ?? id).join(", ")
-                              : "None selected"}
-                          </dd>
-                        </div>
-                        <div className="sm:col-span-2">
-                          <dt className="text-xs font-semibold uppercase text-forest-500">Activities</dt>
-                          <dd>{lead.activities.length > 0 ? lead.activities.join(", ") : "None selected"}</dd>
-                        </div>
-                      </dl>
+                      <LeadDetail lead={lead} destinationNames={destinationNames} />
                     ) : (
                       <p className="whitespace-pre-wrap">{message.message}</p>
                     )}

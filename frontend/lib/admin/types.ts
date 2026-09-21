@@ -1,3 +1,5 @@
+import type { CartItem } from "@/lib/tripCart/types";
+
 /**
  * Raw DB/Prisma-shaped types for the admin API (see backend's
  * adminCrudRouter.ts: admin responses use Prisma field names directly,
@@ -160,14 +162,22 @@ export interface AdminTripLead {
   name: string;
   /** Phone or email, whichever the visitor gave. */
   contact: string;
-  startingCity: string;
+  email: string | null;
+  // Plan-My-Trip wizard fields -- null when this lead came from the cart
+  // checkout flow instead (see cartItems/preferredDates/notes below).
+  startingCity: string | null;
   destinationIds: string[];
-  days: number;
-  travelers: number;
+  days: number | null;
+  travelers: number | null;
   budgetPKR: number | null;
   hotelCategory: string | null;
   transport: string | null;
   activities: string[];
+  // Cart checkout flow fields -- [] / null when this lead came from the
+  // wizard instead.
+  cartItems: CartItem[];
+  preferredDates: string | null;
+  notes: string | null;
   status: "NEW" | "CONTACTED" | "CLOSED";
   createdAt: string;
 }
