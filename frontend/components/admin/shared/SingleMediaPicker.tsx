@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useAdminApi } from "@/lib/admin/useAdminApi";
 import { resolveMediaUrl, isUploadedFile, type MediaKind } from "@/lib/utils/media";
+import { useFileDrop } from "@/lib/admin/useFileDrop";
 
 const MIME: Record<MediaKind, string[]> = {
   image: ["image/jpeg", "image/png", "image/webp"],
@@ -27,6 +28,7 @@ interface SingleMediaPickerProps {
 /**
  * One optional file, for fields that take a single item rather than a
  * gallery -- a situation report's attachment, the home hero's background.
+ * A file can be dropped onto the preview box or picked with the button.
  * Uses the same upload endpoint and cleanup rules as MediaGalleryManager:
  * replacing or clearing an uploaded file deletes the old one from disk.
  */
@@ -82,6 +84,9 @@ export default function SingleMediaPicker({
     if (inputRef.current) inputRef.current.value = "";
   }
 
+  // Holds one file, so a multi-file drop uses the first.
+  const { dragging, dropProps } = useFileDrop((files) => handleFile(files[0]), busy);
+
   async function remove() {
     const previous = value;
     onChange("");
@@ -93,9 +98,13 @@ export default function SingleMediaPicker({
     <div>
       {label && <label className="text-sm font-semibold text-forest-800">{label}</label>}
 
-      <div className="mt-2 flex flex-wrap items-center gap-3">
+      <div {...dropProps} className="mt-2 flex flex-wrap items-center gap-3">
         {value ? (
-          <div className="group relative h-24 w-40 overflow-hidden rounded-lg border border-cream-300 bg-cream-100">
+          <div
+            className={`group relative h-24 w-40 overflow-hidden rounded-lg border bg-cream-100 ${
+              dragging ? "border-2 border-dashed border-forest-600" : "border-cream-300"
+            }`}
+          >
             {kind === "video" ? (
               <video
                 src={resolveMediaUrl(value)}
@@ -116,11 +125,34 @@ export default function SingleMediaPicker({
             >
               ×
             </button>
+            {(dragging || busy) && (
+              <span className="absolute inset-0 flex items-center justify-center bg-forest-900/60 text-xs font-bold text-white">
+                {busy ? "Uploading…" : `Drop to replace`}
+              </span>
+            )}
           </div>
         ) : (
-          <div className="flex h-24 w-40 items-center justify-center rounded-lg border border-dashed border-cream-400 bg-cream-100 text-xs text-forest-500">
-            No {kind}
-          </div>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={busy}
+            className={`flex h-24 w-40 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed px-2 text-center text-xs transition-colors ${
+              dragging
+                ? "border-forest-600 bg-forest-50 font-semibold text-forest-800"
+                : "border-cream-400 bg-cream-100 text-forest-500 hover:border-forest-400"
+            }`}
+          >
+            {busy ? (
+              "Uploading…"
+            ) : dragging ? (
+              "Drop to upload"
+            ) : (
+              <>
+                <span className="font-semibold text-forest-700">Drag &amp; drop {kind}</span>
+                <span>or click to browse</span>
+              </>
+            )}
+          </button>
         )}
 
         <div>

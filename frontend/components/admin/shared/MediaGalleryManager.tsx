@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useAdminApi } from "@/lib/admin/useAdminApi";
 import { resolveMediaUrl, isUploadedFile, type MediaKind } from "@/lib/utils/media";
+import { useFileDrop } from "@/lib/admin/useFileDrop";
 
 const IMAGE_MIME = ["image/jpeg", "image/png", "image/webp"];
 const VIDEO_MIME = ["video/mp4"];
@@ -42,7 +43,7 @@ function formatMb(bytes: number) {
 /**
  * The media manager shared by every admin entity form: a mixed grid of image
  * and video thumbnails, each individually removable, plus upload-from-disk
- * and paste-a-URL. Images and videos are stored in separate arrays (see
+ * (drag & drop anywhere on the component, or browse) and paste-a-URL. Images and videos are stored in separate arrays (see
  * lib/utils/media.ts) but presented as one gallery; drag-to-reorder moves an
  * item within its own kind.
  */
@@ -125,6 +126,8 @@ export default function MediaGalleryManager({
     if (accepted.length > 0) apply({ images: nextImages, videos: nextVideos });
   }
 
+  const { dragging, dropProps } = useFileDrop(handleFiles, uploading !== null);
+
   function addUrl() {
     const trimmed = urlDraft.trim();
     if (!trimmed) return;
@@ -183,7 +186,7 @@ export default function MediaGalleryManager({
   }
 
   return (
-    <div>
+    <div {...dropProps}>
       {label && <label className="text-sm font-semibold text-forest-800">{label}</label>}
 
       {rows.length > 0 ? (
@@ -256,26 +259,49 @@ export default function MediaGalleryManager({
         <p className="mt-2 text-sm text-forest-500">No media yet.</p>
       )}
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={ACCEPT}
-          multiple
-          className="hidden"
-          onChange={(e) => {
-            if (e.target.files?.length) handleFiles(e.target.files);
-          }}
-        />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPT}
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files?.length) handleFiles(e.target.files);
+        }}
+      />
+      <div
+        className={`mt-3 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-6 text-center transition-colors ${
+          dragging ? "border-forest-600 bg-forest-50" : "border-cream-400 bg-cream-50"
+        }`}
+      >
+        <svg viewBox="0 0 24 24" className="h-7 w-7 text-forest-500" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+          <path d="M12 16V4m0 0l-4 4m4-4l4 4" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" strokeLinecap="round" />
+        </svg>
+        {uploading ? (
+          <p className="text-sm font-semibold text-forest-800">
+            Uploading {uploading.done}/{uploading.total}…
+          </p>
+        ) : dragging ? (
+          <p className="text-sm font-semibold text-forest-800">Drop to upload</p>
+        ) : (
+          <>
+            <p className="text-sm font-semibold text-forest-800">Drag &amp; drop images or videos here</p>
+            <p className="text-xs text-forest-500">You can drop several files at once</p>
+          </>
+        )}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading !== null}
-          className="rounded-lg bg-forest-700 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
+          className="mt-1 rounded-lg bg-forest-700 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
         >
-          {uploading ? `Uploading ${uploading.done}/${uploading.total}…` : "Upload files"}
+          Browse files
         </button>
-        <span className="text-xs text-forest-500">or</span>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <span className="text-xs text-forest-500">Or add by link:</span>
         <input
           type="url"
           value={urlDraft}
