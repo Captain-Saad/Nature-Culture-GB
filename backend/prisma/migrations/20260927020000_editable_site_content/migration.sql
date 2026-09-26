@@ -1,0 +1,16 @@
+-- AlterTable
+ALTER TABLE "SiteSetting" ADD COLUMN     "aboutMission" TEXT,
+ADD COLUMN     "aboutValues" JSONB,
+ADD COLUMN     "contactEmail" TEXT,
+ADD COLUMN     "contactPhones" JSONB,
+ADD COLUMN     "finalCtaButton" TEXT,
+ADD COLUMN     "finalCtaSubtitle" TEXT,
+ADD COLUMN     "finalCtaTitle" TEXT,
+ADD COLUMN     "footerBlurb" TEXT,
+ADD COLUMN     "highlights" JSONB,
+ADD COLUMN     "instagramHandle" TEXT,
+ADD COLUMN     "tripPricing" JSONB,
+ADD COLUMN     "whatsappNumber" TEXT,
+ADD COLUMN     "whyUsPoints" JSONB,
+ADD COLUMN     "whyUsSubtitle" TEXT,
+ADD COLUMN     "whyUsTitle" TEXT;

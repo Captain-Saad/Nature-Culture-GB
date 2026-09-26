@@ -10,6 +10,9 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import KeepAlivePing from "@/components/shared/KeepAlivePing";
 import { TripCartProvider } from "@/lib/tripCart/TripCartContext";
+import { BusinessContactProvider } from "@/lib/BusinessContactContext";
+import { getSiteSettings } from "@/lib/site-settings";
+import { getBusinessContact } from "@/lib/siteContent";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -70,7 +73,8 @@ export default async function LocaleLayout({
   }
 
   setRequestLocale(locale);
-  const messages = await getMessages();
+  const [messages, siteSettings] = await Promise.all([getMessages(), getSiteSettings()]);
+  const contact = getBusinessContact(siteSettings);
   const dir = locale === "ur" ? "rtl" : "ltr";
 
   return (
@@ -81,14 +85,16 @@ export default async function LocaleLayout({
     >
       <body className="min-h-screen bg-cream-100 font-body text-forest-900 antialiased">
         <NextIntlClientProvider messages={messages}>
-          <TripCartProvider>
-            <KeepAlivePing />
-            <SmoothScrollProvider>
-              <Navbar />
-              <main>{children}</main>
-              <Footer />
-            </SmoothScrollProvider>
-          </TripCartProvider>
+          <BusinessContactProvider contact={contact}>
+            <TripCartProvider>
+              <KeepAlivePing />
+              <SmoothScrollProvider>
+                <Navbar />
+                <main>{children}</main>
+                <Footer contact={contact} blurb={siteSettings?.footerBlurb ?? null} />
+              </SmoothScrollProvider>
+            </TripCartProvider>
+          </BusinessContactProvider>
         </NextIntlClientProvider>
       </body>
     </html>

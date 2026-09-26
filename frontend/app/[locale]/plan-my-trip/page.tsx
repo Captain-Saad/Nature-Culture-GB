@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { getDestinations } from "@/lib/api";
 import TripBuilderForm from "@/components/trip/TripBuilderForm";
+import { getSiteSettings } from "@/lib/site-settings";
+import { normalizeTripPricing } from "@/lib/pricing";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -12,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function PlanMyTripPage() {
   const t = await getTranslations("tripBuilder");
-  const destinations = await getDestinations();
+  const [destinations, settings] = await Promise.all([getDestinations(), getSiteSettings()]);
 
   return (
     <div className="container-content py-12">
@@ -21,7 +23,7 @@ export default async function PlanMyTripPage() {
         <p className="mt-2 text-forest-600">{t("pageSubtitle")}</p>
       </header>
 
-      <TripBuilderForm destinations={destinations} />
+      <TripBuilderForm destinations={destinations} pricing={normalizeTripPricing(settings?.tripPricing)} />
     </div>
   );
 }

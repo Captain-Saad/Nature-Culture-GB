@@ -9,19 +9,14 @@ import {
   FaMapMarkedAlt,
 } from "react-icons/fa";
 
-const ITEMS = [
-  { Icon: FaMountain, label: "Karakoram" },
-  { Icon: FaWater, label: "Attabad Lake" },
-  { Icon: FaMonument, label: "Baltit Fort" },
-  { Icon: FaCampground, label: "Deosai" },
-  { Icon: FaTree, label: "Hunza Orchards" },
-  { Icon: FaHiking, label: "Trekking GB" },
-  { Icon: FaCompass, label: "Explore GB" },
-  { Icon: FaMapMarkedAlt, label: "10 Regions" },
-];
+// Assigned to labels in order, cycling when there are more labels than icons.
+const ICONS = [FaMountain, FaWater, FaMonument, FaCampground, FaTree, FaHiking, FaCompass, FaMapMarkedAlt];
 
-export default function LogoLoop() {
-  const loopItems = [...ITEMS, ...ITEMS];
+/** The scrolling highlights strip; labels are edited in Site Settings. */
+export default function LogoLoop({ labels }: { labels: string[] }) {
+  if (labels.length === 0) return null;
+  const items = labels.map((label, i) => ({ label, Icon: ICONS[i % ICONS.length] }));
+  const loopItems = [...items, ...items];
 
   return (
     <div className="overflow-hidden border-y border-cream-200 bg-cream-100 py-8">

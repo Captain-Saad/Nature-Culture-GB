@@ -9,18 +9,10 @@ import { getOrCreateSiteSettings } from "./admin/siteSettings";
 const router = Router();
 
 router.get("/", async (_req, res) => {
-  const settings = await getOrCreateSiteSettings();
-  res.json({
-    heroHeadline: settings.heroHeadline,
-    heroSubtext: settings.heroSubtext,
-    aboutUsCopy: settings.aboutUsCopy,
-    contactDisplayText: settings.contactDisplayText,
-    heroBackgroundImage: settings.heroBackgroundImage,
-    heroBackgroundVideo: settings.heroBackgroundVideo,
-    exploreTitle: settings.exploreTitle,
-    exploreSubtitle: settings.exploreSubtitle,
-    exploreTiles: settings.exploreTiles,
-  });
+  // Everything on the row is public site content; only the bookkeeping
+  // fields are left out.
+  const { id: _id, updatedAt: _updatedAt, ...settings } = await getOrCreateSiteSettings();
+  res.json(settings);
 });
 
 export default router;

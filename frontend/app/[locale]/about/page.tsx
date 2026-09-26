@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import AboutContent from "@/components/about/AboutContent";
+import { getSiteSettings } from "@/lib/site-settings";
+import { cardList, getBusinessContact } from "@/lib/siteContent";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -11,6 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AboutPage() {
   const t = await getTranslations("about");
+  const settings = await getSiteSettings();
 
   return (
     <div className="container-content py-12">
@@ -19,7 +22,13 @@ export default async function AboutPage() {
         <p className="mt-2 text-forest-600">{t("pageSubtitle")}</p>
       </header>
 
-      <AboutContent />
+      <AboutContent
+        story={settings?.aboutUsCopy ?? null}
+        mission={settings?.aboutMission ?? null}
+        values={cardList(settings?.aboutValues)}
+        contact={getBusinessContact(settings)}
+        contactNote={settings?.contactDisplayText ?? null}
+      />
     </div>
   );
 }

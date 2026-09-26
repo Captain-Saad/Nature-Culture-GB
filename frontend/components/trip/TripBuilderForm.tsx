@@ -4,12 +4,10 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Destination } from "@/lib/types";
 import { TripState, defaultTripState } from "@/lib/trip-types";
-import { pricingTable, HotelCategoryKey, TransportKey } from "@/lib/pricing";
+import type { TripPricing, HotelCategoryKey, TransportKey } from "@/lib/pricing";
 import CostCalculator from "./CostCalculator";
 import { postToApi } from "@/lib/postToApi";
 
-const STARTING_CITIES = ["Islamabad", "Lahore", "Karachi", "Peshawar"];
-const ACTIVITY_OPTIONS = Object.keys(pricingTable.activityCostPKR);
 
 const STEP_KEYS = [
   "origin",
@@ -25,11 +23,18 @@ function clamp(value: number, min: number, max: number) {
   return Number.isFinite(value) ? Math.min(Math.max(Math.round(value), min), max) : min;
 }
 
-export default function TripBuilderForm({ destinations }: { destinations: Destination[] }) {
+export default function TripBuilderForm({
+  destinations,
+  pricing,
+}: {
+  destinations: Destination[];
+  pricing: TripPricing;
+}) {
   const t = useTranslations("tripBuilder");
   const tc = useTranslations("common");
   const [step, setStep] = useState(0);
-  const [trip, setTrip] = useState<TripState>(defaultTripState);
+  const initialTrip: TripState = { ...defaultTripState, startingCity: pricing.startingCities[0] ?? "" };
+  const [trip, setTrip] = useState<TripState>(initialTrip);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +96,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
   }
 
   function startOver() {
-    setTrip(defaultTripState);
+    setTrip(initialTrip);
     setContact({ name: "", phone: "", email: "", notes: "" });
     setSubmitted(false);
     setStep(0);
@@ -123,7 +128,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
               onChange={(e) => update("startingCity", e.target.value)}
               className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
             >
-              {STARTING_CITIES.map((city) => (
+              {pricing.startingCities.map((city) => (
                 <option key={city} value={city}>
                   {city}
                 </option>
@@ -206,7 +211,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
                 onChange={(e) => update("hotelCategory", e.target.value as HotelCategoryKey)}
                 className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
               >
-                {Object.keys(pricingTable.hotelPerNightPKR).map((cat) => (
+                {Object.keys(pricing.hotelPerNightPKR).map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>
@@ -220,7 +225,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
           <div>
             <label className="text-sm font-semibold text-forest-800">{t("fields.transport")}</label>
             <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {Object.keys(pricingTable.transportPerDayPKR).map((mode) => {
+              {Object.keys(pricing.transportPerDayPKR).map((mode) => {
                 const active = trip.transport === mode;
                 return (
                   <button
@@ -246,7 +251,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
           <div>
             <label className="text-sm font-semibold text-forest-800">{t("fields.activitiesLabel")}</label>
             <div className="mt-3 flex flex-wrap gap-2">
-              {ACTIVITY_OPTIONS.map((activity) => {
+              {pricing.activities.map(({ name: activity }) => {
                 const active = trip.activities.includes(activity);
                 return (
                   <button
@@ -385,7 +390,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
       </div>
 
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <CostCalculator trip={trip} destinations={destinations} />
+        <CostCalculator trip={trip} destinations={destinations} pricing={pricing} />
       </div>
     </div>
   );

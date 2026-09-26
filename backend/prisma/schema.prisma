@@ -368,6 +368,35 @@ model SiteSetting {
   exploreSubtitle String? @db.Text
   exploreTiles    Json?
 
+  // Business contact details, shown in the footer, About/Contact pages, the
+  // Book Now dialog and the checkout confirmation. contactPhones is a
+  // string[]; the first number is the one the "Call" buttons dial.
+  contactEmail    String?
+  contactPhones   Json?
+  whatsappNumber  String?
+  instagramHandle String?
+
+  // About page. aboutUsCopy (above) is "Our Story"; aboutValues is a
+  // { title, body }[] list of value cards.
+  aboutMission String? @db.Text
+  aboutValues  Json?
+
+  // Home page sections below the listings. whyUsPoints is { title, body }[];
+  // highlights is the string[] of labels in the scrolling strip.
+  whyUsTitle       String?
+  whyUsSubtitle    String? @db.Text
+  whyUsPoints      Json?
+  highlightsTitle  String?
+  highlights       Json?
+  finalCtaTitle    String?
+  finalCtaSubtitle String? @db.Text
+  finalCtaButton   String?
+  footerBlurb      String? @db.Text
+
+  // Plan My Trip cost-estimator rates (shape validated in
+  // src/routes/admin/siteSettings.ts). null = the frontend's defaults.
+  tripPricing Json?
+
   updatedAt DateTime @updatedAt
 }
 

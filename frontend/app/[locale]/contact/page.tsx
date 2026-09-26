@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import ContactForm from "@/components/contact/ContactForm";
-
-const CONTACT_EMAIL = "natureculturegb@gmail.com";
-const INSTAGRAM_HANDLE = "@natureandculturegb";
+import ContactDetails from "@/components/contact/ContactDetails";
+import { getSiteSettings } from "@/lib/site-settings";
+import { getBusinessContact } from "@/lib/siteContent";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ContactPage() {
   const t = await getTranslations("contact");
+  const settings = await getSiteSettings();
 
   return (
     <div className="container-content py-12">
@@ -25,25 +26,8 @@ export default async function ContactPage() {
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
         <ContactForm />
 
-        <aside className="rounded-card bg-navy-800 p-6 text-cream-50">
-          <dl className="space-y-4 text-sm">
-            <div>
-              <dt className="text-cream-300">{t("info.email")}</dt>
-              <dd>
-                <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-orange-300">
-                  {CONTACT_EMAIL}
-                </a>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-cream-300">{t("info.instagram")}</dt>
-              <dd>{INSTAGRAM_HANDLE}</dd>
-            </div>
-            <div>
-              <dt className="text-cream-300">{t("info.phone")}</dt>
-              <dd className="text-cream-200">{t("info.phoneNote")}</dd>
-            </div>
-          </dl>
+        <aside className="self-start rounded-card bg-navy-800 p-6 text-cream-50">
+          <ContactDetails contact={getBusinessContact(settings)} note={settings?.contactDisplayText} />
         </aside>
       </div>
     </div>

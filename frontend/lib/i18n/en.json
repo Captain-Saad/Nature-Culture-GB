@@ -134,7 +134,7 @@
       "subtitle": "Real trips, real feedback."
     },
     "partners": {
-      "title": "As Featured By"
+      "title": "Highlights of Gilgit-Baltistan"
     },
     "finalCta": {
       "title": "Ready for the mountains?",
@@ -347,7 +347,17 @@
   },
   "about": {
     "pageTitle": "About Us",
-    "pageSubtitle": "Our story, mission and the people behind Nature & Culture GB"
+    "pageSubtitle": "Our story, mission and the people behind Nature & Culture GB",
+    "storyTitle": "Our Story",
+    "story": "Nature & Culture GB was founded by people who grew up among the peaks and valleys of Gilgit-Baltistan. We started by helping friends and family plan trips that actually matched the reality on the ground — honest costs, realistic timings, and routes we've walked ourselves. That same approach now shapes every itinerary we build.",
+    "missionTitle": "Our Mission",
+    "mission": "To make planning a trip through Gilgit-Baltistan as trustworthy and transparent as the mountains themselves are dramatic — connecting travelers with the region's landscapes, people and living traditions, without the guesswork.",
+    "value1Title": "Local Roots",
+    "value1Body": "Born and raised across GB's valleys.",
+    "value2Title": "Honest Guidance",
+    "value2Body": "Every estimate labeled clearly.",
+    "value3Title": "Responsible Travel",
+    "value3Body": "Respect for land and local communities."
   },
   "contact": {
     "pageTitle": "Contact",
@@ -365,7 +375,7 @@
       "email": "Email",
       "instagram": "Instagram",
       "phone": "Phone",
-      "phoneNote": "Available via the Book Now flow"
+      "whatsapp": "WhatsApp"
     }
   },
   "admin": {
@@ -395,7 +405,8 @@
       "situationReports": "Travel Updates",
       "siteSettings": "Site Settings",
       "leads": "Trip Leads",
-      "reviews": "Reviews"
+      "reviews": "Reviews",
+      "pricing": "Trip Pricing"
     }
   },
   "booking": {

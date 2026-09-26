@@ -1,12 +1,16 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { navLinks } from "@/lib/nav-links";
+import { instagramUrl, telHref, type BusinessContact } from "@/lib/siteContent";
 
-const CONTACT_EMAIL = "natureculturegb@gmail.com";
-const INSTAGRAM_HANDLE = "@natureandculturegb";
-const INSTAGRAM_URL = "https://instagram.com/natureandculturegb";
+interface FooterProps {
+  /** Admin-managed (Site Settings → Contact Details). */
+  contact: BusinessContact;
+  /** Admin override for the blurb; null = the translated default. */
+  blurb: string | null;
+}
 
-export default function Footer() {
+export default function Footer({ contact, blurb }: FooterProps) {
   const t = useTranslations();
   const year = new Date().getFullYear();
 
@@ -31,7 +35,7 @@ export default function Footer() {
             Nature &amp; Culture GB
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream-200">
-            {t("footer.blurb")}
+            {blurb || t("footer.blurb")}
           </p>
           <p className="mt-3 text-sm font-semibold text-orange-300">{t("meta.tagline")}</p>
         </div>
@@ -79,15 +83,27 @@ export default function Footer() {
           </h3>
           <ul className="mt-4 space-y-2 text-sm text-cream-200">
             <li>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-orange-300">
-                {CONTACT_EMAIL}
+              <a href={`mailto:${contact.email}`} className="break-all hover:text-orange-300">
+                {contact.email}
               </a>
             </li>
             <li>
-              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="hover:text-orange-300">
-                {INSTAGRAM_HANDLE}
+              <a
+                href={instagramUrl(contact.instagramHandle)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-orange-300"
+              >
+                @{contact.instagramHandle}
               </a>
             </li>
+            {contact.phones.map((phone) => (
+              <li key={phone}>
+                <a href={telHref(phone)} className="hover:text-orange-300">
+                  {phone}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

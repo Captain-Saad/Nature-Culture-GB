@@ -6,7 +6,8 @@ import { Link } from "@/i18n/navigation";
 import { useTripCart } from "@/lib/tripCart/TripCartContext";
 import { estimateTotal } from "@/lib/tripCart/estimateTotal";
 import { submitTripRequest } from "@/lib/tripCart/submitTripRequest";
-import { PHONE_NUMBERS, WHATSAPP_NUMBER } from "@/lib/businessContact";
+import { useBusinessContact } from "@/lib/BusinessContactContext";
+import { telHref } from "@/lib/siteContent";
 import CartGroupedList from "./CartGroupedList";
 import GlareHover from "@/components/shared/GlareHover";
 
@@ -31,6 +32,7 @@ function EmptyState() {
 function ConfirmationScreen({ contact }: { contact: string }) {
   const t = useTranslations("checkout");
   const tBooking = useTranslations("booking");
+  const { phones, whatsappNumber } = useBusinessContact();
   return (
     <div className="container-content flex flex-col items-center py-24 text-center">
       <span className="flex h-16 w-16 items-center justify-center rounded-full bg-forest-100 text-forest-700">
@@ -44,21 +46,23 @@ function ConfirmationScreen({ contact }: { contact: string }) {
       <div className="mt-8 w-full max-w-xs rounded-card bg-white p-5 shadow-card">
         <p className="text-sm font-semibold text-forest-800">{t("confirmCallToAction")}</p>
         <div className="mt-3 space-y-1.5">
-          {PHONE_NUMBERS.map((num) => (
+          {phones.map((num) => (
             <p key={num} className="font-display text-lg font-bold text-forest-900">
               {num}
             </p>
           ))}
         </div>
         <div className="mt-4 flex flex-col gap-2">
+          {phones.length > 0 && (
+            <a
+              href={telHref(phones[0])}
+              className="rounded-full bg-forest-700 px-5 py-2.5 text-center text-sm font-bold text-white transition-colors hover:bg-forest-800"
+            >
+              {tBooking("callAction")}
+            </a>
+          )}
           <a
-            href={`tel:${PHONE_NUMBERS[0].replace(/\s/g, "")}`}
-            className="rounded-full bg-forest-700 px-5 py-2.5 text-center text-sm font-bold text-white transition-colors hover:bg-forest-800"
-          >
-            {tBooking("callAction")}
-          </a>
-          <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}`}
+            href={`https://wa.me/${whatsappNumber}`}
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-full border-2 border-forest-700 px-5 py-2.5 text-center text-sm font-bold text-forest-700 transition-colors hover:bg-forest-50"

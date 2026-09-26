@@ -1,3 +1,4 @@
+import type { SiteSettings } from "@/lib/site-settings";
 import type { CartItem } from "@/lib/tripCart/types";
 
 /**
@@ -197,16 +198,8 @@ export interface AdminContactMessage {
  * The site-settings singleton. Every field is nullable: null means "not set,
  * use the built-in default" rather than "empty".
  */
-export interface AdminSiteSettings {
+/** The site-settings row as the admin API returns it (see lib/site-settings.ts for the fields). */
+export type AdminSiteSettings = SiteSettings & {
   id: string;
-  heroHeadline: string | null;
-  heroSubtext: string | null;
-  aboutUsCopy: string | null;
-  contactDisplayText: string | null;
-  heroBackgroundImage: string | null;
-  heroBackgroundVideo: string | null;
-  exploreTitle: string | null;
-  exploreSubtitle: string | null;
-  exploreTiles: unknown;
   updatedAt: string;
-}
+};

@@ -4,12 +4,13 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { TripState } from "@/lib/trip-types";
 import { Destination } from "@/lib/types";
-import { pricingTable, ActivityKey } from "@/lib/pricing";
+import type { TripPricing } from "@/lib/pricing";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
 
 interface CostCalculatorProps {
   trip: TripState;
   destinations: Destination[];
+  pricing: TripPricing;
 }
 
 /**
@@ -17,9 +18,10 @@ interface CostCalculatorProps {
  * splits into per-seat (Shared) vs per-vehicle-with-capacity (Private,
  * 4x4 Jeep), activities are priced individually rather than a flat fee,
  * and entry fees are driven by the actual selected destinations — all
- * against the pricing config, recalculating on every trip change.
+ * against the admin-editable rates (/admin/pricing), recalculating on every
+ * trip change.
  */
-export default function CostCalculator({ trip, destinations }: CostCalculatorProps) {
+export default function CostCalculator({ trip, destinations, pricing }: CostCalculatorProps) {
   const t = useTranslations("tripBuilder.summary");
   const tc = useTranslations("common");
 
@@ -29,35 +31,34 @@ export default function CostCalculator({ trip, destinations }: CostCalculatorPro
   );
 
   const breakdown = useMemo(() => {
+    const activityCost = new Map(pricing.activities.map((a) => [a.name, a.costPKR]));
     const nights = Math.max(trip.days - 1, 0);
-    const rooms = Math.max(Math.ceil(trip.travelers / pricingTable.travelersPerRoom), 1);
-    const hotel = pricingTable.hotelPerNightPKR[trip.hotelCategory] * nights * rooms;
+    const rooms = Math.max(Math.ceil(trip.travelers / pricing.travelersPerRoom), 1);
+    const hotel = pricing.hotelPerNightPKR[trip.hotelCategory] * nights * rooms;
 
-    const transportRate = pricingTable.transportPerDayPKR[trip.transport];
+    const transportRate = pricing.transportPerDayPKR[trip.transport];
     const capacity =
-      pricingTable.transportVehicleCapacity[
-        trip.transport as keyof typeof pricingTable.transportVehicleCapacity
-      ];
+      pricing.transportVehicleCapacity[trip.transport as keyof TripPricing["transportVehicleCapacity"]];
     const vehicles = capacity ? Math.max(Math.ceil(trip.travelers / capacity), 1) : trip.travelers;
     const transport = capacity
       ? transportRate * trip.days * vehicles
       : transportRate * trip.days * trip.travelers;
 
-    const food = pricingTable.foodPerDayPersonPKR * trip.days * trip.travelers;
+    const food = pricing.foodPerDayPersonPKR * trip.days * trip.travelers;
 
     const activitiesCost =
       trip.activities.reduce(
-        (sum, activity) => sum + (pricingTable.activityCostPKR[activity as ActivityKey] ?? 0),
+        (sum, activity) => sum + (activityCost.get(activity) ?? 0),
         0
       ) * trip.travelers;
 
-    const entryFees = pricingTable.entryFeePerAttractionPKR * selectedDestinations.length * trip.travelers;
+    const entryFees = pricing.entryFeePerAttractionPKR * selectedDestinations.length * trip.travelers;
 
     const total = hotel + transport + food + activitiesCost + entryFees;
     const budgetDiff = trip.budgetPKR - total;
 
     return { nights, rooms, transport, vehicles, hotel, food, activitiesCost, entryFees, total, budgetDiff };
-  }, [trip, selectedDestinations]);
+  }, [trip, selectedDestinations, pricing]);
 
   const rows: { key: string; value: number; detail?: string }[] = [
     {
@@ -84,7 +85,7 @@ export default function CostCalculator({ trip, destinations }: CostCalculatorPro
     <div className="rounded-card bg-white p-6 shadow-card">
       <div className="flex items-center justify-between">
         <h3 className="font-display text-lg font-bold text-forest-900">{t("title")}</h3>
-        <EstimatedBadge lastUpdated={pricingTable.lastUpdated} />
+        <EstimatedBadge lastUpdated={pricing.lastUpdated} />
       </div>
 
       <p className="mt-1 text-xs uppercase tracking-wide text-forest-500">{t("breakdown")}</p>

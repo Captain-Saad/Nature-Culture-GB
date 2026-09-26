@@ -25,6 +25,7 @@ const SECTIONS = [
   "packages",
   "situationReports",
   "siteSettings",
+  "pricing",
   "leads",
   "reviews",
 ] as const;
@@ -39,6 +40,7 @@ const SECTION_HREFS: Record<(typeof SECTIONS)[number], string> = {
   packages: "/admin/packages",
   situationReports: "/admin/situation-reports",
   siteSettings: "/admin/site-settings",
+  pricing: "/admin/pricing",
   leads: "/admin/leads",
   reviews: "/admin/reviews",
 };

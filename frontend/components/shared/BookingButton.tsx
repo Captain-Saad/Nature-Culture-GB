@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Modal from "./Modal";
 import GlareHover from "./GlareHover";
-import { PHONE_NUMBERS, WHATSAPP_NUMBER } from "@/lib/businessContact";
+import { useBusinessContact } from "@/lib/BusinessContactContext";
+import { telHref } from "@/lib/siteContent";
 
 interface BookingButtonProps {
   label?: string;
@@ -21,6 +22,7 @@ export default function BookingButton({
 }: BookingButtonProps) {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
+  const { phones, whatsappNumber } = useBusinessContact();
 
   return (
     <>
@@ -41,7 +43,7 @@ export default function BookingButton({
         )}
 
         <div className="mt-5 space-y-2">
-          {PHONE_NUMBERS.map((num) => (
+          {phones.map((num) => (
             <p key={num} className="font-display text-lg font-bold text-forest-900">
               {num}
             </p>
@@ -49,14 +51,16 @@ export default function BookingButton({
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          {phones.length > 0 && (
+            <a
+              href={telHref(phones[0])}
+              className="flex-1 rounded-full bg-forest-700 px-5 py-2.5 text-center text-sm font-bold text-white transition-colors hover:bg-forest-800"
+            >
+              {t("booking.callAction")}
+            </a>
+          )}
           <a
-            href={`tel:${PHONE_NUMBERS[0].replace(/\s/g, "")}`}
-            className="flex-1 rounded-full bg-forest-700 px-5 py-2.5 text-center text-sm font-bold text-white transition-colors hover:bg-forest-800"
-          >
-            {t("booking.callAction")}
-          </a>
-          <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}`}
+            href={`https://wa.me/${whatsappNumber}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 rounded-full border-2 border-forest-700 px-5 py-2.5 text-center text-sm font-bold text-forest-700 transition-colors hover:bg-forest-50"

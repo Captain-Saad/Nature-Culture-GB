@@ -27,6 +27,7 @@ import {
   getReviews,
 } from "@/lib/api";
 import { getSiteSettings } from "@/lib/site-settings";
+import { cardList, highlightList } from "@/lib/siteContent";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -186,7 +187,11 @@ export default async function HomePage() {
         </ScrollReveal>
       </Section>
 
-      <WhyUs />
+      <WhyUs
+        title={siteSettings?.whyUsTitle}
+        subtitle={siteSettings?.whyUsSubtitle}
+        points={cardList(siteSettings?.whyUsPoints)}
+      />
 
       <Section
         title={t("reviews.title")}
@@ -200,12 +205,16 @@ export default async function HomePage() {
 
       <div>
         <p className="container-content pt-10 text-center text-xs font-semibold uppercase tracking-wide text-forest-500">
-          {t("partners.title")}
+          {siteSettings?.highlightsTitle || t("partners.title")}
         </p>
-        <LogoLoop />
+        <LogoLoop labels={highlightList(siteSettings?.highlights)} />
       </div>
 
-      <FinalCta />
+      <FinalCta
+        title={siteSettings?.finalCtaTitle}
+        subtitle={siteSettings?.finalCtaSubtitle}
+        buttonLabel={siteSettings?.finalCtaButton}
+      />
     </>
   );
 }

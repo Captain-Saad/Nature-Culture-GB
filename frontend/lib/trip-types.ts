@@ -11,6 +11,7 @@ export interface TripState {
   activities: string[];
 }
 
+/** TripBuilderForm replaces startingCity with the first configured city. */
 export const defaultTripState: TripState = {
   startingCity: "Islamabad",
   destinationIds: [],
