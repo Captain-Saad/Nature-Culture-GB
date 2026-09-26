@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { FLIGHT_ROUTES } from "../lib/flightRoutes";
+import { FLIGHT_ROUTES, type FlightRouteLeg } from "../lib/flightRoutes";
 import { fetchRouteFlight, countRequestsThisMonth } from "../services/aviationstack";
 
 /**
@@ -8,20 +8,19 @@ import { fetchRouteFlight, countRequestsThisMonth } from "../services/aviationst
  * Request budget: AviationStack's free tier allows ~100 requests/month
  * and each leg costs one request per run (dep_iata/arr_iata can't be
  * combined into a single call for two legs). With 2 legs (ISB->KDU,
- * KDU->ISB) run once every REFRESH_INTERVAL_MS:
+ * KDU->ISB) run once a day at 00:01 PKT (see scheduler.ts):
  *   2 legs x 1 run/day x ~30.4 days/month ~= 61 requests/month
+ * plus at most one retry per leg on nights when today's flight wasn't
+ * published yet at 00:01 -- skipped once the month nears the ceiling.
  * That's ~61% of the free tier, leaving headroom for manual testing
  * and the occasional retry. A 2-4x/day cadence (as a first pass at this
  * suggested) would cost 122-244 requests/month for 2 legs -- already
  * over budget before accounting for anything else -- so this runs once
  * daily instead. See countRequestsThisMonth() usage below for the
- * early-warning check; bump REFRESH_INTERVAL_MS in
- * backend/src/jobs/scheduler.ts if you'd rather trade freshness for
- * some of that headroom (or drop to one leg to afford running twice a
- * day).
+ * early-warning check.
  */
-export async function refreshFlights(): Promise<void> {
-  for (const leg of FLIGHT_ROUTES) {
+export async function refreshFlights(legs: FlightRouteLeg[] = FLIGHT_ROUTES): Promise<void> {
+  for (const leg of legs) {
     try {
       const flight = await fetchRouteFlight(leg);
 

@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import type { FlightRouteLeg } from "../lib/flightRoutes";
+import { pktDateString } from "../lib/pakistanTime";
 
 // The free tier is HTTP-only -- https:// fails outright on it, this
 // isn't a mistake.
@@ -84,7 +85,7 @@ export async function countRequestsThisMonth(): Promise<number> {
 }
 
 /**
- * Fetches today's flight for one route leg from AviationStack and
+ * Fetches today's (Pakistan date) flight for one route leg from AviationStack and
  * normalizes it. Throws on any failure (missing API key, network
  * error, non-2xx, or an `error` object in an otherwise-200 response --
  * AviationStack reports quota exhaustion that way) so the caller
@@ -102,7 +103,10 @@ export async function fetchRouteFlight(leg: FlightRouteLeg): Promise<NormalizedF
   url.searchParams.set("access_key", apiKey);
   url.searchParams.set("dep_iata", leg.originIata);
   url.searchParams.set("arr_iata", leg.destinationIata);
-  url.searchParams.set("limit", "1");
+  // A route returns roughly the last three days of flights, several per day
+  // and in no useful order, so fetch them all and pick today's below. The
+  // quota counts requests, not results -- a larger limit costs nothing.
+  url.searchParams.set("limit", "100");
 
   let res: Response;
   try {
@@ -126,10 +130,15 @@ export async function fetchRouteFlight(leg: FlightRouteLeg): Promise<NormalizedF
 
   await logUsage(leg.id, true);
 
-  const flight = data.data?.[0];
-  // A 200 with an empty `data` array means the route legitimately has
-  // no flight in today's schedule (weather cancellation called in
-  // advance, off-day, etc.) -- not a failure, just nothing to show.
+  // flight_date is the local (Pakistan) departure date. When a route has
+  // several flights today, show the first departure of the day.
+  const today = pktDateString();
+  const flight = (data.data ?? [])
+    .filter((f) => f.flight_date === today)
+    .sort((a, b) => (a.departure.scheduled ?? "").localeCompare(b.departure.scheduled ?? ""))[0];
+  // No flight dated today means the route has none in today's schedule
+  // (off-day, cancellation called in advance) or AviationStack hasn't
+  // published today's yet -- the scheduler retries once later that night.
   if (!flight) return null;
 
   const delayMinutes = flight.departure.delay ?? 0;
