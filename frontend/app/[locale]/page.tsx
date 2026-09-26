@@ -72,10 +72,10 @@ export default async function HomePage() {
 
       <Section
         id="explore"
-        title={t("exploreSection.title")}
-        subtitle={t("exploreSection.subtitle")}
+        title={siteSettings?.exploreTitle || t("exploreSection.title")}
+        subtitle={siteSettings?.exploreSubtitle || t("exploreSection.subtitle")}
       >
-        <ExploreRegions />
+        <ExploreRegions tiles={siteSettings?.exploreTiles ?? null} destinations={destinations} />
       </Section>
 
       <Section

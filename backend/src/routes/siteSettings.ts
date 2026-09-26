@@ -17,6 +17,9 @@ router.get("/", async (_req, res) => {
     contactDisplayText: settings.contactDisplayText,
     heroBackgroundImage: settings.heroBackgroundImage,
     heroBackgroundVideo: settings.heroBackgroundVideo,
+    exploreTitle: settings.exploreTitle,
+    exploreSubtitle: settings.exploreSubtitle,
+    exploreTiles: settings.exploreTiles,
   });
 });
 

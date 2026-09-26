@@ -205,5 +205,8 @@ export interface AdminSiteSettings {
   contactDisplayText: string | null;
   heroBackgroundImage: string | null;
   heroBackgroundVideo: string | null;
+  exploreTitle: string | null;
+  exploreSubtitle: string | null;
+  exploreTiles: unknown;
   updatedAt: string;
 }

@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
+import { REGIONS } from "../../lib/enums";
 import { mediaUrlSchema, deleteUploadedFile } from "../../lib/uploads";
 
 /**
@@ -16,6 +18,29 @@ export const SITE_SETTING_ID = "default";
 const optionalMedia = z.union([mediaUrlSchema, z.literal("")]).nullish();
 const optionalText = z.string().trim().max(5000).nullish();
 
+/**
+ * One tile in the home page's "Explore Gilgit-Baltistan" grid. Each tile
+ * links to /destinations filtered by its region, so `region` must be one of
+ * the ten real regions; label and image are optional overrides (empty =
+ * the region name, and the first photo of a destination in that region).
+ */
+const exploreTileSchema = z.object({
+  region: z.enum(REGIONS),
+  label: z.string().trim().max(60).default(""),
+  image: z.union([mediaUrlSchema, z.literal("")]).default(""),
+  visible: z.boolean().default(true),
+});
+
+export type ExploreTile = z.infer<typeof exploreTileSchema>;
+
+const exploreTilesSchema = z
+  .array(exploreTileSchema)
+  .max(REGIONS.length)
+  .refine((tiles) => new Set(tiles.map((t) => t.region)).size === tiles.length, {
+    message: "Each region can appear only once.",
+  })
+  .nullish();
+
 const updateSiteSettingsSchema = z.object({
   heroHeadline: z.string().trim().max(300).nullish(),
   heroSubtext: optionalText,
@@ -23,7 +48,18 @@ const updateSiteSettingsSchema = z.object({
   contactDisplayText: optionalText,
   heroBackgroundImage: optionalMedia,
   heroBackgroundVideo: optionalMedia,
+  exploreTitle: z.string().trim().max(200).nullish(),
+  exploreSubtitle: z.string().trim().max(500).nullish(),
+  exploreTiles: exploreTilesSchema,
 });
+
+/** Tile images currently referenced by a stored exploreTiles value. */
+function exploreTileImages(value: Prisma.JsonValue | null): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((tile) => (tile && typeof tile === "object" && !Array.isArray(tile) ? tile.image : null))
+    .filter((image): image is string => typeof image === "string" && image !== "");
+}
 
 /**
  * Reads the singleton, creating it on first access so neither this route nor
@@ -54,11 +90,14 @@ router.patch("/", async (req, res) => {
 
   // Normalise "" -> null so an empty field reads as "unset" (and falls back
   // to the built-in default) rather than rendering as an empty string.
-  const data = Object.fromEntries(
+  const data: Record<string, unknown> = Object.fromEntries(
     Object.entries(parsed.data)
       .filter(([, value]) => value !== undefined)
       .map(([key, value]) => [key, value === "" ? null : value])
   );
+  // A JSON column can't take a bare null -- DbNull stores SQL NULL, which
+  // reads back as "use the default tiles".
+  if (data.exploreTiles === null) data.exploreTiles = Prisma.DbNull;
 
   const updated = await prisma.siteSetting.update({ where: { id: SITE_SETTING_ID }, data });
 
@@ -71,6 +110,10 @@ router.patch("/", async (req, res) => {
     if (before && before !== after) {
       await deleteUploadedFile(before);
     }
+  }
+  const keptTileImages = new Set(exploreTileImages(updated.exploreTiles));
+  for (const image of exploreTileImages(previous.exploreTiles)) {
+    if (!keptTileImages.has(image)) await deleteUploadedFile(image);
   }
 
   res.json(updated);

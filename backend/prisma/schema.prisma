@@ -359,6 +359,15 @@ model SiteSetting {
   heroBackgroundImage String?
   heroBackgroundVideo String?
 
+  // Home page "Explore Gilgit-Baltistan" section. Title/subtitle override
+  // the i18n strings; exploreTiles is the ordered tile list, shaped
+  // { region, label, image, visible }[] (validated in
+  // src/routes/admin/siteSettings.ts). null = the built-in default of all
+  // ten regions in their standard order.
+  exploreTitle    String?
+  exploreSubtitle String? @db.Text
+  exploreTiles    Json?
+
   updatedAt DateTime @updatedAt
 }
 

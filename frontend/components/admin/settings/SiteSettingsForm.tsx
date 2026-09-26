@@ -4,11 +4,14 @@ import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useAdminApi } from "@/lib/admin/useAdminApi";
 import SingleMediaPicker from "@/components/admin/shared/SingleMediaPicker";
+import ExploreSectionEditor from "@/components/admin/settings/ExploreSectionEditor";
+import { normalizeExploreTiles, type ExploreTile } from "@/lib/exploreTiles";
 import type { AdminSiteSettings } from "@/lib/admin/types";
 
 const HERO_VIDEO_MAX_BYTES = 30 * 1024 * 1024;
 
-type Editable = Omit<AdminSiteSettings, "id" | "updatedAt">;
+// exploreTiles is edited as its own typed state below.
+type Editable = Omit<AdminSiteSettings, "id" | "updatedAt" | "exploreTiles">;
 
 interface SiteSettingsFormProps {
   initial: AdminSiteSettings;
@@ -28,7 +31,12 @@ export default function SiteSettingsForm({ initial }: SiteSettingsFormProps) {
     contactDisplayText: initial.contactDisplayText ?? "",
     heroBackgroundImage: initial.heroBackgroundImage ?? "",
     heroBackgroundVideo: initial.heroBackgroundVideo ?? "",
+    exploreTitle: initial.exploreTitle ?? "",
+    exploreSubtitle: initial.exploreSubtitle ?? "",
   });
+  const [exploreTiles, setExploreTiles] = useState<ExploreTile[]>(() =>
+    normalizeExploreTiles(initial.exploreTiles)
+  );
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -46,7 +54,7 @@ export default function SiteSettingsForm({ initial }: SiteSettingsFormProps) {
 
     const { error: err } = await request("site-settings", {
       method: "PATCH",
-      body: JSON.stringify(values),
+      body: JSON.stringify({ ...values, exploreTiles }),
     });
     setSaving(false);
 
@@ -125,6 +133,18 @@ export default function SiteSettingsForm({ initial }: SiteSettingsFormProps) {
           />
         </div>
       </div>
+
+      <ExploreSectionEditor
+        title={values.exploreTitle ?? ""}
+        subtitle={values.exploreSubtitle ?? ""}
+        tiles={exploreTiles}
+        onTitleChange={(v) => set("exploreTitle", v)}
+        onSubtitleChange={(v) => set("exploreSubtitle", v)}
+        onTilesChange={(tiles) => {
+          setExploreTiles(tiles);
+          setSaved(false);
+        }}
+      />
 
       <div className="rounded-card bg-white p-6 shadow-card">
         <h2 className="font-display text-lg font-bold text-forest-900">Site Copy</h2>

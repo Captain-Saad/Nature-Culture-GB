@@ -1,8 +1,9 @@
 import "server-only";
 
 /**
- * Public, read-only site settings (hero copy and background, About Us copy,
- * contact display text) — edited from /admin/site-settings.
+ * Public, read-only site settings (hero copy and background, the Explore
+ * Gilgit-Baltistan section, About Us copy, contact display text) — edited
+ * from /admin/site-settings.
  *
  * Every field can be null, meaning "not set": callers fall back to the
  * built-in i18n string or bundled asset, so the site renders correctly
@@ -15,6 +16,10 @@ export interface SiteSettings {
   contactDisplayText: string | null;
   heroBackgroundImage: string | null;
   heroBackgroundVideo: string | null;
+  exploreTitle: string | null;
+  exploreSubtitle: string | null;
+  /** Raw tile list — read through normalizeExploreTiles() in lib/exploreTiles.ts. */
+  exploreTiles: unknown;
 }
 
 /**
