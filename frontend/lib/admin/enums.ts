@@ -22,6 +22,8 @@ export const DIFFICULTIES = ["Easy", "Moderate", "Challenging", "Extreme"] as co
 
 export const HOTEL_CATEGORIES = ["Budget", "Mid-Range", "Luxury"] as const;
 
+export const TRANSPORT_MODES = ["Shared", "Private", "4x4 Jeep"] as const;
+
 export const PACKAGE_CATEGORIES = ["Adventure", "Honeymoon", "Family", "Budget Backpacker", "Luxury"] as const;
 
 export const SITUATION_STATUSES = ["Open", "Closed", "Restricted"] as const;
