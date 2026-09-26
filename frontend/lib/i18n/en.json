@@ -69,7 +69,8 @@
     "nearbyAttractions": "Nearby Attractions",
     "costEstimate": "Cost Estimate",
     "requiredField": "This field is required",
-    "optional": "optional"
+    "optional": "optional",
+    "sending": "Sending…"
   },
   "home": {
     "hero": {
@@ -230,12 +231,17 @@
       "budget": "Budget (PKR)",
       "hotelCategory": "Hotel Category",
       "transport": "Transport",
-      "activitiesLabel": "Activities"
+      "activitiesLabel": "Activities",
+      "name": "Your Name",
+      "phone": "Phone / WhatsApp",
+      "email": "Email",
+      "notes": "Anything else we should know?"
     },
     "buttons": {
       "next": "Next",
       "back": "Back",
-      "finish": "Review Estimate"
+      "finish": "Review Estimate",
+      "submit": "Send My Trip Request"
     },
     "summary": {
       "title": "Your Trip Estimate",
@@ -255,7 +261,12 @@
       "includedDestinations": "Destinations included",
       "includedActivities": "Activities included",
       "noneSelectedYet": "None selected yet"
-    }
+    },
+    "contactHeading": "Your contact details",
+    "contactHint": "We'll use these to send you a detailed plan and final quote.",
+    "needDestination": "Pick at least one destination (step 2) before sending your request.",
+    "success": "Your trip request has been sent! Our team will contact you shortly to finalize your plan.",
+    "planAnother": "Plan another trip"
   },
   "weather": {
     "pageTitle": "Weather",
@@ -330,7 +341,8 @@
       "name": "Your Name",
       "rating": "Your Rating",
       "text": "Your Review",
-      "submit": "Submit Review"
+      "submit": "Submit Review",
+      "success": "Thank you! Your review has been submitted and will appear once it's approved."
     }
   },
   "about": {
@@ -345,7 +357,9 @@
       "email": "Email",
       "subject": "Subject",
       "message": "Message",
-      "submit": "Send Message"
+      "submit": "Send Message",
+      "success": "Thanks — your message has been sent. We'll get back to you soon.",
+      "sendAnother": "Send another message"
     },
     "info": {
       "email": "Email",

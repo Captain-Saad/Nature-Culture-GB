@@ -6,6 +6,7 @@ import { Destination } from "@/lib/types";
 import { TripState, defaultTripState } from "@/lib/trip-types";
 import { pricingTable, HotelCategoryKey, TransportKey } from "@/lib/pricing";
 import CostCalculator from "./CostCalculator";
+import { postToApi } from "@/lib/postToApi";
 
 const STARTING_CITIES = ["Islamabad", "Lahore", "Karachi", "Peshawar"];
 const ACTIVITY_OPTIONS = Object.keys(pricingTable.activityCostPKR);
@@ -20,12 +21,19 @@ const STEP_KEYS = [
   "review",
 ] as const;
 
+function clamp(value: number, min: number, max: number) {
+  return Number.isFinite(value) ? Math.min(Math.max(Math.round(value), min), max) : min;
+}
+
 export default function TripBuilderForm({ destinations }: { destinations: Destination[] }) {
   const t = useTranslations("tripBuilder");
   const tc = useTranslations("common");
   const [step, setStep] = useState(0);
   const [trip, setTrip] = useState<TripState>(defaultTripState);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [contact, setContact] = useState({ name: "", phone: "", email: "", notes: "" });
 
   const totalSteps = STEP_KEYS.length;
   const stepKey = STEP_KEYS[step];
@@ -52,10 +60,41 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
     );
   }
 
-  function handleSubmit() {
-    // Phase 4 (backend) will POST this payload to the trip-planning API.
-    console.log("Trip Builder submission (client-side only):", trip);
+  /**
+   * Sends the wizard as a trip lead (POST /trip-leads), the same endpoint
+   * cart checkout uses -- it shows up in /admin/leads with every choice made
+   * here, and triggers the lead notification email.
+   */
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (trip.destinationIds.length === 0) {
+      setError(t("needDestination"));
+      return;
+    }
+
+    setError(null);
+    setSending(true);
+    const result = await postToApi("/trip-leads", {
+      ...trip,
+      name: contact.name,
+      contact: contact.phone,
+      email: contact.email || undefined,
+      notes: contact.notes || undefined,
+    });
+    setSending(false);
+
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
     setSubmitted(true);
+  }
+
+  function startOver() {
+    setTrip(defaultTripState);
+    setContact({ name: "", phone: "", email: "", notes: "" });
+    setSubmitted(false);
+    setStep(0);
   }
 
   return (
@@ -129,7 +168,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
                 min={1}
                 max={30}
                 value={trip.days}
-                onChange={(e) => update("days", Number(e.target.value))}
+                onChange={(e) => update("days", clamp(Number(e.target.value), 1, 30))}
                 className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
               />
             </div>
@@ -140,7 +179,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
                 min={1}
                 max={20}
                 value={trip.travelers}
-                onChange={(e) => update("travelers", Number(e.target.value))}
+                onChange={(e) => update("travelers", clamp(Number(e.target.value), 1, 20))}
                 className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
               />
             </div>
@@ -156,7 +195,7 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
                 min={0}
                 step={5000}
                 value={trip.budgetPKR}
-                onChange={(e) => update("budgetPKR", Number(e.target.value))}
+                onChange={(e) => update("budgetPKR", Math.max(0, Math.round(Number(e.target.value)) || 0))}
                 className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
               />
             </div>
@@ -232,17 +271,94 @@ export default function TripBuilderForm({ destinations }: { destinations: Destin
         {stepKey === "review" && (
           <div>
             {submitted ? (
-              <p className="rounded-lg bg-forest-50 p-4 text-sm font-semibold text-forest-800">
-                {tc("addedToTrip")} — {t("summary.title")} logged to console (client-side only for now).
-              </p>
+              <div role="status" className="rounded-lg bg-forest-50 p-5 text-center">
+                <p className="text-sm font-semibold text-forest-800">{t("success")}</p>
+                <button
+                  type="button"
+                  onClick={startOver}
+                  className="mt-3 text-sm font-semibold text-orange-600 underline-offset-2 hover:underline"
+                >
+                  {t("planAnother")}
+                </button>
+              </div>
             ) : (
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="w-full rounded-full bg-forest-700 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-forest-800"
-              >
-                {t("buttons.finish")}
-              </button>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <h3 className="font-display text-base font-bold text-forest-900">{t("contactHeading")}</h3>
+                  <p className="mt-1 text-xs text-forest-500">{t("contactHint")}</p>
+                </div>
+
+                {error && (
+                  <p role="alert" className="rounded-lg bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-800">
+                    {error}
+                  </p>
+                )}
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="trip-name" className="text-sm font-semibold text-forest-800">
+                      {t("fields.name")}
+                    </label>
+                    <input
+                      id="trip-name"
+                      required
+                      maxLength={200}
+                      value={contact.name}
+                      onChange={(e) => setContact((c) => ({ ...c, name: e.target.value }))}
+                      className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="trip-phone" className="text-sm font-semibold text-forest-800">
+                      {t("fields.phone")}
+                    </label>
+                    <input
+                      id="trip-phone"
+                      type="tel"
+                      required
+                      minLength={3}
+                      maxLength={200}
+                      value={contact.phone}
+                      onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))}
+                      className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="trip-email" className="text-sm font-semibold text-forest-800">
+                    {t("fields.email")} <span className="font-normal text-forest-500">({tc("optional")})</span>
+                  </label>
+                  <input
+                    id="trip-email"
+                    type="email"
+                    maxLength={200}
+                    value={contact.email}
+                    onChange={(e) => setContact((c) => ({ ...c, email: e.target.value }))}
+                    className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="trip-notes" className="text-sm font-semibold text-forest-800">
+                    {t("fields.notes")} <span className="font-normal text-forest-500">({tc("optional")})</span>
+                  </label>
+                  <textarea
+                    id="trip-notes"
+                    rows={3}
+                    maxLength={2000}
+                    value={contact.notes}
+                    onChange={(e) => setContact((c) => ({ ...c, notes: e.target.value }))}
+                    className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={sending}
+                  className="w-full rounded-full bg-forest-700 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
+                >
+                  {sending ? tc("sending") : t("buttons.submit")}
+                </button>
+              </form>
             )}
           </div>
         )}
