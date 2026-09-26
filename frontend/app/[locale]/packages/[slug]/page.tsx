@@ -3,7 +3,6 @@ import Image from "@/components/shared/SafeImage";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getPackages, getPackageBySlug } from "@/lib/api";
-import { placeholderImage } from "@/lib/utils/image";
 import { resolveMediaUrl } from "@/lib/utils/media";
 import LineSidebar from "@/components/shared/LineSidebar";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
@@ -81,7 +80,7 @@ export default async function PackageDetailPage({
 
       <div className="mb-10 relative aspect-[16/7] w-full overflow-hidden rounded-card">
         <Image
-          src={pkg.images[0] ? resolveMediaUrl(pkg.images[0]) : placeholderImage(pkg.slug, 1600, 700)}
+          src={pkg.images[0] ? resolveMediaUrl(pkg.images[0]) : ""}
           alt={pkg.title}
           fill
           sizes="100vw"

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import EmptyState from "@/components/shared/EmptyState";
 import { getPackages } from "@/lib/api";
 import PackageCard from "@/components/packages/PackageCard";
 import ScrollReveal from "@/components/shared/ScrollReveal";
@@ -22,11 +23,15 @@ export default async function PackagesPage() {
         <p className="mt-2 text-forest-600">{t("pageSubtitle")}</p>
       </header>
 
-      <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {packages.map((p) => (
-          <PackageCard key={p.id} pkg={p} />
-        ))}
-      </ScrollReveal>
+      {packages.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {packages.map((p) => (
+            <PackageCard key={p.id} pkg={p} />
+          ))}
+        </ScrollReveal>
+      )}
     </div>
   );
 }

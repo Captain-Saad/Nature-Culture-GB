@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import EmptyState from "@/components/shared/EmptyState";
 import { getWeather } from "@/lib/api";
 import WeatherCard from "@/components/weather/WeatherCard";
 
@@ -21,11 +22,15 @@ export default async function WeatherPage() {
         <p className="mt-2 text-forest-600">{t("pageSubtitle")}</p>
       </header>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {weather.map((w) => (
-          <WeatherCard key={w.location} weather={w} />
-        ))}
-      </div>
+      {weather.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {weather.map((w) => (
+            <WeatherCard key={w.location} weather={w} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

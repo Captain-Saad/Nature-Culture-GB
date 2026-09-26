@@ -70,7 +70,8 @@
     "costEstimate": "Cost Estimate",
     "requiredField": "This field is required",
     "optional": "optional",
-    "sending": "Sending…"
+    "sending": "Sending…",
+    "nothingYet": "Nothing here yet — please check back soon."
   },
   "home": {
     "hero": {

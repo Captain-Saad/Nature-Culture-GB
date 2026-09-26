@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import EmptyState from "@/components/shared/EmptyState";
 import { getReviews } from "@/lib/api";
 import ReviewCard from "@/components/reviews/ReviewCard";
 import ReviewForm from "@/components/reviews/ReviewForm";
@@ -34,11 +35,15 @@ export default async function ReviewsPage() {
       </header>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-        <div className="grid gap-5 sm:grid-cols-2">
-          {reviews.map((r) => (
-            <ReviewCard key={r.id} review={r} />
-          ))}
-        </div>
+        {reviews.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2">
+            {reviews.map((r) => (
+              <ReviewCard key={r.id} review={r} />
+            ))}
+          </div>
+        )}
 
         <div>
           <ReviewForm />

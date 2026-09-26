@@ -4,22 +4,19 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { CartItem } from "@/lib/tripCart/types";
 import { resolveMediaUrl } from "@/lib/utils/media";
-import { placeholderImage } from "@/lib/utils/image";
+import { SafeImg } from "@/components/shared/SafeImage";
 
-function ItemThumb({ image, seed }: { image: string | null; seed: string }) {
-  const fallback = placeholderImage(seed, 200, 200);
+/**
+ * A stored reference can 404 (e.g. the file was removed after this item was
+ * added to a cart that persists across sessions); SafeImg shows a neutral
+ * placeholder then, and when the item has no photo at all.
+ */
+function ItemThumb({ image }: { image: string | null }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- small cart thumbnail, arbitrary stored/placeholder URLs
-    <img
-      src={image ? resolveMediaUrl(image) : fallback}
+    <SafeImg
+      src={image ? resolveMediaUrl(image) : undefined}
       alt=""
       className="h-16 w-16 shrink-0 rounded-lg object-cover"
-      // A stored reference can 404 (e.g. the file was removed on the
-      // backend after this item was added to a cart that persists
-      // across sessions) -- fall back rather than show a broken image.
-      onError={(e) => {
-        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
-      }}
     />
   );
 }
@@ -45,7 +42,7 @@ export default function CartItemRow({ item, onRemove, onNightsChange }: CartItem
   return (
     <div className="flex gap-3 rounded-card bg-white p-3 shadow-card">
       <Link href={href}>
-        <ItemThumb image={item.image} seed={item.type === "hotelRoom" ? item.hotelId : item.id} />
+        <ItemThumb image={item.image} />
       </Link>
 
       <div className="min-w-0 flex-1">

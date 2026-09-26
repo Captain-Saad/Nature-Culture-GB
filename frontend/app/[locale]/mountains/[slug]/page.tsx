@@ -3,7 +3,6 @@ import Image from "@/components/shared/SafeImage";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getMountains, getMountainBySlug } from "@/lib/api";
-import { placeholderImage } from "@/lib/utils/image";
 import { resolveMediaUrl } from "@/lib/utils/media";
 import ImageGallery from "@/components/shared/ImageGallery";
 import MapSection from "@/components/shared/MapSection";
@@ -51,7 +50,7 @@ export default async function MountainDetailPage({
           src={
             mountain.images[0]
               ? resolveMediaUrl(mountain.images[0])
-              : placeholderImage(mountain.slug, 1600, 700)
+              : ""
           }
           alt={mountain.name}
           fill

@@ -79,59 +79,67 @@ export default async function HomePage() {
         <ExploreRegions tiles={siteSettings?.exploreTiles ?? null} destinations={destinations} />
       </Section>
 
-      <Section
-        title={t("destinations.title")}
-        subtitle={t("destinations.subtitle")}
-        seeAllHref="/destinations"
-        seeAllLabel={t("destinations.title")}
-        className="bg-cream-100"
-      >
-        <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {destinations.slice(0, 4).map((d) => (
-            <DestinationCard key={d.id} destination={d} />
-          ))}
-        </ScrollReveal>
-      </Section>
+      {destinations.length > 0 && (
+        <Section
+          title={t("destinations.title")}
+          subtitle={t("destinations.subtitle")}
+          seeAllHref="/destinations"
+          seeAllLabel={t("destinations.title")}
+          className="bg-cream-100"
+        >
+          <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {destinations.slice(0, 4).map((d) => (
+              <DestinationCard key={d.id} destination={d} />
+            ))}
+          </ScrollReveal>
+        </Section>
+      )}
 
-      <Section
-        title={t("mountains.title")}
-        subtitle={t("mountains.subtitle")}
-        seeAllHref="/mountains"
-        seeAllLabel={t("mountains.title")}
-      >
-        <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {mountains.slice(0, 3).map((m) => (
-            <MountainCard key={m.id} mountain={m} />
-          ))}
-        </ScrollReveal>
-      </Section>
+      {mountains.length > 0 && (
+        <Section
+          title={t("mountains.title")}
+          subtitle={t("mountains.subtitle")}
+          seeAllHref="/mountains"
+          seeAllLabel={t("mountains.title")}
+        >
+          <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {mountains.slice(0, 3).map((m) => (
+              <MountainCard key={m.id} mountain={m} />
+            ))}
+          </ScrollReveal>
+        </Section>
+      )}
 
-      <Section
-        title={t("hotels.title")}
-        subtitle={t("hotels.subtitle")}
-        seeAllHref="/hotels"
-        seeAllLabel={t("hotels.title")}
-        className="bg-cream-100"
-      >
-        <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {hotels.slice(0, 3).map((h) => (
-            <HotelCard key={h.id} hotel={h} />
-          ))}
-        </ScrollReveal>
-      </Section>
+      {hotels.length > 0 && (
+        <Section
+          title={t("hotels.title")}
+          subtitle={t("hotels.subtitle")}
+          seeAllHref="/hotels"
+          seeAllLabel={t("hotels.title")}
+          className="bg-cream-100"
+        >
+          <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {hotels.slice(0, 3).map((h) => (
+              <HotelCard key={h.id} hotel={h} />
+            ))}
+          </ScrollReveal>
+        </Section>
+      )}
 
-      <Section
-        title={t("packages.title")}
-        subtitle={t("packages.subtitle")}
-        seeAllHref="/packages"
-        seeAllLabel={t("packages.title")}
-      >
-        <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {packages.slice(0, 3).map((p) => (
-            <PackageCard key={p.id} pkg={p} />
-          ))}
-        </ScrollReveal>
-      </Section>
+      {packages.length > 0 && (
+        <Section
+          title={t("packages.title")}
+          subtitle={t("packages.subtitle")}
+          seeAllHref="/packages"
+          seeAllLabel={t("packages.title")}
+        >
+          <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {packages.slice(0, 3).map((p) => (
+              <PackageCard key={p.id} pkg={p} />
+            ))}
+          </ScrollReveal>
+        </Section>
+      )}
 
       <section className="bg-navy-gradient py-16 text-cream-50 sm:py-20">
         <div className="container-content text-center">
@@ -146,46 +154,52 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <Section
-        title={t("weather.title")}
-        subtitle={t("weather.subtitle")}
-        seeAllHref="/weather"
-        seeAllLabel={t("weather.title")}
-        className="bg-cream-100"
-      >
-        <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {weather.slice(0, 3).map((w) => (
-            <WeatherCard key={w.location} weather={w} />
-          ))}
-        </ScrollReveal>
-      </Section>
+      {weather.length > 0 && (
+        <Section
+          title={t("weather.title")}
+          subtitle={t("weather.subtitle")}
+          seeAllHref="/weather"
+          seeAllLabel={t("weather.title")}
+          className="bg-cream-100"
+        >
+          <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {weather.slice(0, 3).map((w) => (
+              <WeatherCard key={w.location} weather={w} />
+            ))}
+          </ScrollReveal>
+        </Section>
+      )}
 
-      <Section
-        title={t("flights.title")}
-        subtitle={t("flights.subtitle")}
-        seeAllHref="/flights"
-        seeAllLabel={t("flights.title")}
-      >
-        <ScrollReveal className="grid gap-4">
-          {flights.slice(0, 2).map((f) => (
-            <FlightCard key={f.id} flight={f} />
-          ))}
-        </ScrollReveal>
-      </Section>
+      {flights.length > 0 && (
+        <Section
+          title={t("flights.title")}
+          subtitle={t("flights.subtitle")}
+          seeAllHref="/flights"
+          seeAllLabel={t("flights.title")}
+        >
+          <ScrollReveal className="grid gap-4">
+            {flights.slice(0, 2).map((f) => (
+              <FlightCard key={f.id} flight={f} />
+            ))}
+          </ScrollReveal>
+        </Section>
+      )}
 
-      <Section
-        title={t("travelUpdates.title")}
-        subtitle={t("travelUpdates.subtitle")}
-        seeAllHref="/travel-updates"
-        seeAllLabel={t("travelUpdates.title")}
-        className="bg-cream-100"
-      >
-        <ScrollReveal className="grid gap-4 sm:grid-cols-2">
-          {situationReports.slice(0, 4).map((r) => (
-            <SituationReportCard key={r.id} report={r} />
-          ))}
-        </ScrollReveal>
-      </Section>
+      {situationReports.length > 0 && (
+        <Section
+          title={t("travelUpdates.title")}
+          subtitle={t("travelUpdates.subtitle")}
+          seeAllHref="/travel-updates"
+          seeAllLabel={t("travelUpdates.title")}
+          className="bg-cream-100"
+        >
+          <ScrollReveal className="grid gap-4 sm:grid-cols-2">
+            {situationReports.slice(0, 4).map((r) => (
+              <SituationReportCard key={r.id} report={r} />
+            ))}
+          </ScrollReveal>
+        </Section>
+      )}
 
       <WhyUs
         title={siteSettings?.whyUsTitle}
@@ -193,15 +207,17 @@ export default async function HomePage() {
         points={cardList(siteSettings?.whyUsPoints)}
       />
 
-      <Section
-        title={t("reviews.title")}
-        subtitle={t("reviews.subtitle")}
-        seeAllHref="/reviews"
-        seeAllLabel={t("reviews.title")}
-        className="bg-cream-100"
-      >
-        <ReviewsCarousel reviews={reviews} />
-      </Section>
+      {reviews.length > 0 && (
+        <Section
+          title={t("reviews.title")}
+          subtitle={t("reviews.subtitle")}
+          seeAllHref="/reviews"
+          seeAllLabel={t("reviews.title")}
+          className="bg-cream-100"
+        >
+          <ReviewsCarousel reviews={reviews} />
+        </Section>
+      )}
 
       <div>
         <p className="container-content pt-10 text-center text-xs font-semibold uppercase tracking-wide text-forest-500">

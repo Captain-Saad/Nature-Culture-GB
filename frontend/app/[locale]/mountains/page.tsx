@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import EmptyState from "@/components/shared/EmptyState";
 import { getMountains } from "@/lib/api";
 import MountainCard from "@/components/mountains/MountainCard";
 import ScrollReveal from "@/components/shared/ScrollReveal";
@@ -23,11 +24,15 @@ export default async function MountainsPage() {
         <p className="mt-2 text-forest-600">{t("pageSubtitle")}</p>
       </header>
 
-      <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {mountains.map((m) => (
-          <MountainCard key={m.id} mountain={m} />
-        ))}
-      </ScrollReveal>
+      {mountains.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <ScrollReveal className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {mountains.map((m) => (
+            <MountainCard key={m.id} mountain={m} />
+          ))}
+        </ScrollReveal>
+      )}
     </div>
   );
 }

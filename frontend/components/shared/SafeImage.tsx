@@ -17,7 +17,8 @@ export default function SafeImage({ onError, className, fill, width, height, sty
   // A new src deserves a fresh attempt.
   useEffect(() => setFailed(false), [props.src]);
 
-  if (failed) {
+  // An item with no photo yet gets the same neutral placeholder as a broken one.
+  if (failed || !props.src) {
     return <MediaPlaceholder className={className} fill={fill} width={width} height={height} label={alt} />;
   }
 
@@ -43,7 +44,7 @@ export function SafeImg({ className, alt, onError, ...props }: React.ImgHTMLAttr
   const [failed, setFailed] = useState(false);
   useEffect(() => setFailed(false), [props.src]);
 
-  if (failed) return <MediaPlaceholder className={className} label={alt} />;
+  if (failed || !props.src) return <MediaPlaceholder className={className} label={alt} />;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element -- arbitrary stored/admin-supplied URLs

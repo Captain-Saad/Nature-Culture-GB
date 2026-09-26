@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import EmptyState from "@/components/shared/EmptyState";
 import { getSituationReports } from "@/lib/api";
 import SituationReportCard from "@/components/situation/SituationReportCard";
 
@@ -21,11 +22,15 @@ export default async function TravelUpdatesPage() {
         <p className="mt-2 text-forest-600">{t("pageSubtitle")}</p>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {reports.map((r) => (
-          <SituationReportCard key={r.id} report={r} />
-        ))}
-      </div>
+      {reports.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {reports.map((r) => (
+            <SituationReportCard key={r.id} report={r} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
