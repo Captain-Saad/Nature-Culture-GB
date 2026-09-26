@@ -2,7 +2,7 @@
 
 import { ReactNode, useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import Image from "next/image";
+import Image from "@/components/shared/SafeImage";
 
 interface TiltedCardProps {
   imageSrc: string;

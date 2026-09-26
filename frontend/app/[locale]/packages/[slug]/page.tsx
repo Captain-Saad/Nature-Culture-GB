@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import Image from "@/components/shared/SafeImage";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getPackages, getPackageBySlug } from "@/lib/api";

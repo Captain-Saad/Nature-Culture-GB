@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/shared/SafeImage";
 import { Link } from "@/i18n/navigation";
 import { Region } from "@/lib/types";
 import { placeholderImage } from "@/lib/utils/image";

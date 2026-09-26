@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { gsap } from "gsap";
-import Image from "next/image";
+import Image, { SafeImg } from "@/components/shared/SafeImage";
 import { useRouter } from "@/i18n/navigation";
 import SearchBar from "@/components/shared/SearchBar";
 import GlareHover from "@/components/shared/GlareHover";
@@ -118,8 +118,7 @@ export default function Hero({ headline, subtext, backgroundImage, backgroundVid
           className="object-cover opacity-60"
         />
       ) : (
-        // eslint-disable-next-line @next/next/no-img-element -- admin-supplied URL outside next.config's remotePatterns
-        <img src={posterUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />
+        <SafeImg src={posterUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />
       )}
 
       {isDefaultBackground ? (

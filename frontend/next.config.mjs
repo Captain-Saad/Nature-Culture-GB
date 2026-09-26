@@ -18,7 +18,13 @@ const nextConfig = {
         protocol: "https",
         hostname: "fastly.picsum.photos",
       },
-      // Admin-uploaded media, served by the Express backend. The hostname
+      // Admin-uploaded media in Supabase Storage (public bucket).
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+      // Admin-uploaded media in the backend's local-disk fallback mode. The hostname
       // and port are derived from NEXT_PUBLIC_API_URL so this keeps working
       // when the API moves off localhost.
       ...apiImagePattern(),

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Image, { SafeImg } from "@/components/shared/SafeImage";
 import { createPortal } from "react-dom";
 import { toMediaItems, canUseNextImage, type MediaItem } from "@/lib/utils/media";
 
@@ -55,8 +55,7 @@ function Thumb({ item, alt, index }: { item: MediaItem; alt: string; index: numb
       className="object-cover transition-transform group-hover:scale-105"
     />
   ) : (
-    // eslint-disable-next-line @next/next/no-img-element -- admin-pasted URL from a host not in next.config's remotePatterns
-    <img
+    <SafeImg
       src={item.url}
       alt={`${alt} — ${index + 1}`}
       className="h-full w-full object-cover transition-transform group-hover:scale-105"
@@ -148,8 +147,7 @@ export default function ImageGallery({ images, videos, alt }: ImageGalleryProps)
                   className="object-contain"
                 />
               ) : (
-                // eslint-disable-next-line @next/next/no-img-element -- see Thumb
-                <img
+                <SafeImg
                   src={active.url}
                   alt={`${alt} — ${activeIndex! + 1}`}
                   className="h-full w-full object-contain"

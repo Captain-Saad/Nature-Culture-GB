@@ -6,19 +6,36 @@ import multer from "multer";
 import { z } from "zod";
 
 /**
- * Local-disk media storage for admin uploads.
+ * Media storage for admin uploads.
  *
- * Files land in backend/uploads/ and are served read-only at /uploads/<name>
- * (see src/app.ts). Rows store the *relative* path ("/uploads/abc.mp4"), never
- * an absolute URL: the same DB then works behind localhost:4100 in dev and a
- * real domain in production, and the frontend prefixes NEXT_PUBLIC_API_URL at
- * render time (see frontend/lib/utils/media.ts). Externally hosted URLs that
- * predate uploads (picsum/unsplash seeds) still validate as absolute URLs, so
- * both kinds coexist in the same gallery array.
+ * Every upload is first written to backend/uploads/ by multer so its real
+ * type and size can be verified. What happens next depends on configuration:
+ *
+ * - Supabase Storage (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY set): the
+ *   verified file is pushed to a public bucket, the local copy is removed,
+ *   and the row stores the absolute public URL. This is the only mode that
+ *   survives on hosts with an ephemeral disk (Render's free tier wipes the
+ *   filesystem on every deploy, restart and idle spin-down).
+ * - Local disk (fallback): the file stays in backend/uploads/, is served
+ *   read-only at /uploads/<name> (see src/app.ts), and the row stores the
+ *   *relative* path; the frontend prefixes NEXT_PUBLIC_API_URL at render time
+ *   (see frontend/lib/utils/media.ts).
+ *
+ * Externally hosted URLs (picsum/unsplash seeds, admin-pasted links) validate
+ * as absolute URLs, so all kinds coexist in the same gallery array.
  */
 
 export const UPLOAD_DIR = path.resolve(__dirname, "../../uploads");
 export const UPLOAD_URL_PREFIX = "/uploads";
+
+const SUPABASE_URL = process.env.SUPABASE_URL?.trim().replace(/\/+$/, "") ?? "";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? "";
+const SUPABASE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET?.trim() || "media";
+
+export const usingSupabaseStorage = Boolean(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY);
+
+/** Public URLs of objects in our bucket all start with this. */
+const SUPABASE_PUBLIC_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/`;
 
 const MB = 1024 * 1024;
 
@@ -143,8 +160,108 @@ export async function verifyUploadedFile(file: Express.Multer.File): Promise<Ver
   return { ok: true };
 }
 
+function storageHeaders(extra: Record<string, string> = {}) {
+  return {
+    Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+    apikey: SUPABASE_SERVICE_ROLE_KEY,
+    ...extra,
+  };
+}
+
+/**
+ * Creates the public bucket on first boot if it doesn't exist yet, so a fresh
+ * Supabase project needs no manual dashboard setup. Safe to call repeatedly.
+ */
+export async function ensureStorageBucket(): Promise<void> {
+  if (!usingSupabaseStorage) {
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        "[uploads] SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are not set -- uploads are stored on local disk, " +
+          "which is wiped on every restart of an ephemeral host. Uploaded media WILL disappear."
+      );
+    }
+    return;
+  }
+
+  try {
+    const existing = await fetch(`${SUPABASE_URL}/storage/v1/bucket/${SUPABASE_BUCKET}`, {
+      headers: storageHeaders(),
+    });
+    if (existing.ok) return;
+
+    const created = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
+      method: "POST",
+      headers: storageHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({
+        id: SUPABASE_BUCKET,
+        name: SUPABASE_BUCKET,
+        public: true,
+        file_size_limit: VIDEO_MAX_BYTES,
+        allowed_mime_types: ALLOWED_MIME_TYPES,
+      }),
+    });
+    if (!created.ok) {
+      console.error(`[uploads] Could not create storage bucket "${SUPABASE_BUCKET}":`, await created.text());
+      return;
+    }
+    console.log(`[uploads] Created public storage bucket "${SUPABASE_BUCKET}".`);
+  } catch (err) {
+    console.error("[uploads] Supabase Storage bucket check failed:", err);
+  }
+}
+
+/**
+ * Moves a verified multer upload to its permanent home and returns the value
+ * to store in the DB: an absolute Supabase public URL, or "/uploads/<name>"
+ * when running on local disk.
+ */
+export async function persistUpload(file: Express.Multer.File): Promise<string> {
+  if (!usingSupabaseStorage) return `${UPLOAD_URL_PREFIX}/${file.filename}`;
+
+  try {
+    const body = await fsp.readFile(file.path);
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${file.filename}`, {
+      method: "POST",
+      headers: storageHeaders({
+        "Content-Type": file.mimetype,
+        // Filenames are unique per upload, so the object never changes.
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "x-upsert": "false",
+      }),
+      body,
+    });
+    if (!res.ok) {
+      throw new Error(`Supabase Storage rejected the upload (${res.status}): ${await res.text()}`);
+    }
+    return `${SUPABASE_PUBLIC_PREFIX}${file.filename}`;
+  } finally {
+    // The disk copy was only ever a staging area in this mode.
+    await fsp.unlink(file.path).catch(() => {});
+  }
+}
+
+/** True when a stored value is a file we host (and therefore may delete). */
+export function isHostedUpload(storedUrl: string): boolean {
+  if (storedUrl.startsWith(`${UPLOAD_URL_PREFIX}/`)) return true;
+  return usingSupabaseStorage && storedUrl.startsWith(SUPABASE_PUBLIC_PREFIX);
+}
+
 /** Best-effort cleanup; a missing file is not an error worth surfacing. */
 export async function deleteUploadedFile(storedUrl: string): Promise<boolean> {
+  if (usingSupabaseStorage && storedUrl.startsWith(SUPABASE_PUBLIC_PREFIX)) {
+    const name = storedUrl.slice(SUPABASE_PUBLIC_PREFIX.length);
+    if (!name || name.includes("/") || name.includes("..")) return false;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${name}`, {
+        method: "DELETE",
+        headers: storageHeaders(),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
   const absolute = resolveStoredUpload(storedUrl);
   if (!absolute) return false;
   try {

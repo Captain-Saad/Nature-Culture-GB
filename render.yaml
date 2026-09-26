@@ -29,3 +29,9 @@ services:
         sync: false
       - key: AVIATIONSTACK_API_KEY
         sync: false
+      # Supabase Storage for admin uploads -- without these, uploads land
+      # on Render's ephemeral disk and vanish on the next restart.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false

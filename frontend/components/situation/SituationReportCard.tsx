@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { SituationReport } from "@/lib/types";
 import { resolveMediaUrl } from "@/lib/utils/media";
+import { SafeImg } from "@/components/shared/SafeImage";
 
 const STATUS_STYLES: Record<string, string> = {
   Open: "bg-forest-100 text-forest-800",
@@ -28,8 +29,7 @@ export default function SituationReportCard({ report }: { report: SituationRepor
       <p className="mt-3 text-sm text-forest-700">{report.description}</p>
 
       {report.imageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element -- admin-supplied URL, may be off next.config's configured domains
-        <img
+        <SafeImg
           src={resolveMediaUrl(report.imageUrl)}
           alt=""
           className="mt-3 max-h-64 w-full rounded-lg object-cover"

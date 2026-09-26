@@ -6,10 +6,11 @@
  * for why). Everything that renders a gallery merges them through
  * toMediaItems() so the split stays an implementation detail of storage.
  *
- * Stored values are either an absolute URL (externally hosted) or a relative
- * "/uploads/<file>" path produced by the admin uploader. The latter is served
- * by the Express backend, not Next, so it needs the API origin prefixed at
- * render time -- resolveMediaUrl() is the single place that happens.
+ * Stored values are either an absolute URL (Supabase Storage uploads, or
+ * externally hosted links) or a relative "/uploads/<file>" path from the
+ * backend's local-disk fallback. The latter is served by the Express backend,
+ * not Next, so it needs the API origin prefixed at render time --
+ * resolveMediaUrl() is the single place that happens.
  */
 
 export type MediaKind = "image" | "video";
@@ -30,9 +31,22 @@ export function resolveMediaUrl(stored: string): string {
   return stored;
 }
 
-/** True when a stored value is a locally uploaded file we're able to delete. */
+/**
+ * Admin uploads land in Supabase Storage (absolute public URL) or, in the
+ * backend's local-disk fallback mode, at a relative "/uploads/<file>" path.
+ */
+function isSupabaseStorageUrl(url: string): boolean {
+  try {
+    const { hostname, pathname } = new URL(url);
+    return hostname.endsWith(".supabase.co") && pathname.startsWith("/storage/v1/object/public/");
+  } catch {
+    return false;
+  }
+}
+
+/** True when a stored value is an uploaded file we're able to delete. */
 export function isUploadedFile(stored: string): boolean {
-  return stored.startsWith("/uploads/");
+  return stored.startsWith("/uploads/") || isSupabaseStorageUrl(stored);
 }
 
 /**
@@ -61,6 +75,7 @@ export function canUseNextImage(url: string): boolean {
   try {
     const { hostname } = new URL(url, API_BASE || "http://localhost");
     if (API_BASE && url.startsWith(API_BASE)) return true;
+    if (isSupabaseStorageUrl(url)) return true;
     return NEXT_IMAGE_HOSTS.includes(hostname);
   } catch {
     return false;

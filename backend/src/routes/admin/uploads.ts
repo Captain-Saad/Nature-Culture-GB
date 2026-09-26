@@ -7,7 +7,8 @@ import {
   verifyUploadedFile,
   deleteUploadedFile,
   mediaKindFor,
-  UPLOAD_URL_PREFIX,
+  persistUpload,
+  isHostedUpload,
   IMAGE_MAX_BYTES,
   VIDEO_MAX_BYTES,
   ALLOWED_MIME_TYPES,
@@ -35,8 +36,9 @@ router.get("/limits", (_req, res) => {
 
 /**
  * POST /admin/uploads -- multipart/form-data, one file under the "file" key.
- * Returns { url, type, size } where url is the relative "/uploads/<name>"
- * path to store in a gallery array.
+ * Returns { url, type, size } where url is the value to store in a gallery
+ * array: an absolute Supabase Storage URL, or "/uploads/<name>" in local-disk
+ * mode (see lib/uploads.ts).
  */
 router.post("/", (req, res) => {
   uploadMiddleware(req, res, async (err: unknown) => {
@@ -66,8 +68,17 @@ router.post("/", (req, res) => {
       return;
     }
 
+    let url: string;
+    try {
+      url = await persistUpload(file);
+    } catch (storeErr) {
+      console.error("Upload storage failed:", storeErr);
+      res.status(502).json({ error: "Could not save the file to storage. Please try again." });
+      return;
+    }
+
     res.status(201).json({
-      url: `${UPLOAD_URL_PREFIX}/${file.filename}`,
+      url,
       type: mediaKindFor(file.mimetype),
       size: file.size,
     });
@@ -75,7 +86,7 @@ router.post("/", (req, res) => {
 });
 
 /**
- * DELETE /admin/uploads -- removes a previously uploaded file from disk.
+ * DELETE /admin/uploads -- removes a previously uploaded file from storage.
  * Takes the stored url in the body rather than a path param so the
  * "/uploads/x.jpg" value can be passed through verbatim without encoding.
  */
@@ -87,10 +98,10 @@ router.delete("/", async (req, res) => {
   }
 
   const { url } = parsed.data;
-  if (!url.startsWith(`${UPLOAD_URL_PREFIX}/`)) {
+  if (!isHostedUpload(url)) {
     // External URLs aren't ours to delete -- removing it from the gallery
     // array is the caller's whole job in that case.
-    res.status(400).json({ error: "Only uploaded files (/uploads/…) can be deleted." });
+    res.status(400).json({ error: "Only uploaded files can be deleted." });
     return;
   }
 
