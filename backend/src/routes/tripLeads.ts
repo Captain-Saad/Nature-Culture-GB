@@ -2,7 +2,7 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma";
 import { tripLeadSchema } from "../validators/tripLead";
 import { publicWriteRateLimit } from "../middleware/rateLimit";
-import { sendNotificationEmail } from "../services/email";
+import { sendNotificationEmailInBackground } from "../services/email";
 import { syncLeadInBackground } from "../services/sheets";
 import { leadDetailsHtml, leadDetailsText, leadHeadline } from "../lib/leadDetails";
 
@@ -18,17 +18,17 @@ router.post("/", publicWriteRateLimit, async (req, res) => {
 
   const lead = await prisma.tripLead.create({ data: parsed.data });
 
-  // New row in the Google Sheet (doesn't hold up the response).
+  // Sheet row and email both happen in the background: the client's
+  // "Submit Trip Request" returns as soon as the lead is safely stored.
   syncLeadInBackground(lead);
-
-  const email = await sendNotificationEmail({
+  sendNotificationEmailInBackground({
     subject: `New trip request: ${lead.name} — ${leadHeadline(lead)}`,
     text: `New trip request from the website.\n\n${leadDetailsText(lead)}`,
     html: leadDetailsHtml(lead, "New trip request"),
     replyTo: lead.email ?? undefined,
   });
 
-  res.status(201).json({ id: lead.id, status: lead.status, emailSent: email.sent });
+  res.status(201).json({ id: lead.id, status: lead.status });
 });
 
 export default router;

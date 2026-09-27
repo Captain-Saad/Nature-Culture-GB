@@ -2,7 +2,7 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma";
 import { contactSchema } from "../validators/contact";
 import { publicWriteRateLimit } from "../middleware/rateLimit";
-import { sendNotificationEmail } from "../services/email";
+import { sendNotificationEmailInBackground } from "../services/email";
 
 const router = Router();
 
@@ -17,8 +17,10 @@ router.post("/", publicWriteRateLimit, async (req, res) => {
 
   const contactMessage = await prisma.contactMessage.create({ data });
 
-  const email = await sendNotificationEmail({
+  // Sent in the background: the visitor gets their confirmation immediately.
+  sendNotificationEmailInBackground({
     subject: data.subject ? `New contact message: ${data.subject}` : "New contact message",
+    replyTo: data.email,
     text: [
       `Name: ${data.name}`,
       `Email: ${data.email}`,
@@ -32,7 +34,7 @@ router.post("/", publicWriteRateLimit, async (req, res) => {
       .join("\n"),
   });
 
-  res.status(201).json({ id: contactMessage.id, status: contactMessage.status, emailSent: email.sent });
+  res.status(201).json({ id: contactMessage.id, status: contactMessage.status });
 });
 
 export default router;
