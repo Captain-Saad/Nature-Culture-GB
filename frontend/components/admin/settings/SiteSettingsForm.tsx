@@ -249,8 +249,9 @@ export default function SiteSettingsForm({ initial }: SiteSettingsFormProps) {
           multiline
         />
         <p className="text-xs text-forest-500">
-          If a video is set it plays behind the hero, with the image as its poster. On phones and for
-          visitors who prefer reduced motion, the image is shown instead of the video.
+          If a video is set it plays behind the hero on every screen size, with the image as its poster
+          (shown while it loads, and instead of the video for visitors who turn on reduced motion or data
+          saving). Keep uploads short and light — phones download the whole file.
         </p>
         <div className="grid gap-6 sm:grid-cols-2">
           <SingleMediaPicker

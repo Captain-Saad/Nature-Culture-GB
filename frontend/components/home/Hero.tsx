@@ -24,10 +24,11 @@ export default function Hero({ headline, subtext, backgroundImage, backgroundVid
   const [query, setQuery] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // Starts false so the server and the first client render agree (no
-  // hydration mismatch) and so phones never begin downloading the video.
-  // The effect below upgrades to video only where it's appropriate.
-  const [playVideo, setPlayVideo] = useState(false);
+  // Starts null so the server and the first client render agree (no
+  // hydration mismatch); the effect below picks the file for this screen,
+  // or leaves the poster image when a video isn't appropriate.
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // True only when an admin hasn't set anything in Site Settings -- i.e.
   // we're showing our own bundled hero-background.mp4, a bright,
@@ -49,26 +50,47 @@ export default function Hero({ headline, subtext, backgroundImage, backgroundVid
 
   useEffect(() => {
     if (!videoUrl) {
-      setPlayVideo(false);
+      setVideoSrc(null);
       return;
     }
 
-    // A background video is decoration: skip it on small screens (data cost,
-    // and it's mostly hidden behind the text anyway) and whenever the visitor
-    // has asked for reduced motion. Both show the poster image instead.
-    const small = window.matchMedia("(max-width: 767px)");
+    // Plays on every screen size, including phones. Upright phones get the
+    // bundled clip's portrait cut (540x960, ~2MB vs ~7.7MB) -- the hero only
+    // ever shows the middle of the landscape frame there anyway. An admin's
+    // upload is used as-is everywhere. The poster stays when the visitor has
+    // asked for reduced motion or for data saving.
+    const portraitPhone = window.matchMedia("(max-width: 767px) and (orientation: portrait)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
-    const update = () => setPlayVideo(!small.matches && !reduced.matches);
+    const update = () => {
+      if (reduced.matches || saveData) setVideoSrc(null);
+      else if (!backgroundVideo && portraitPhone.matches) setVideoSrc("/videos/hero-background-mobile.mp4");
+      else setVideoSrc(videoUrl);
+    };
     update();
 
-    small.addEventListener("change", update);
+    portraitPhone.addEventListener("change", update);
     reduced.addEventListener("change", update);
     return () => {
-      small.removeEventListener("change", update);
+      portraitPhone.removeEventListener("change", update);
       reduced.removeEventListener("change", update);
     };
-  }, [videoUrl]);
+  }, [videoUrl, backgroundVideo]);
+
+  // iOS Safari only autoplays when the video carries a real `muted`
+  // attribute, which React doesn't write (it sets the property). Set it
+  // explicitly and start playback ourselves; if the browser still refuses
+  // (e.g. Low Power Mode) the poster frame simply stays up.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !videoSrc) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.play().catch(() => {});
+  }, [videoSrc]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -94,10 +116,11 @@ export default function Hero({ headline, subtext, backgroundImage, backgroundVid
 
   return (
     <section ref={rootRef} className="relative overflow-hidden bg-navy-900">
-      {playVideo && videoUrl ? (
+      {videoSrc ? (
         <video
-          key={videoUrl}
-          src={videoUrl}
+          ref={videoRef}
+          key={videoSrc}
+          src={videoSrc}
           poster={posterUrl}
           autoPlay
           muted

@@ -45,17 +45,21 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-forest-100 bg-cream-50/90 backdrop-blur">
       <nav className="container-content flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold text-forest-800">
+        <Link
+          href="/"
+          className="flex min-w-0 items-center gap-2 font-display text-base font-bold text-forest-800 sm:text-lg"
+        >
           <span
             aria-hidden
-            className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-forest-700 bg-cream-100 text-forest-700"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-forest-700 bg-cream-100 text-forest-700"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M3 18l5-8 4 5 3-4 6 7H3z" />
               <path d="M14 6l-2 3" strokeLinecap="round" />
             </svg>
           </span>
-          <span className="hidden sm:inline">Nature &amp; Culture GB</span>
+          {/* Always shown -- on phones too; truncates rather than crowding out the cart/menu buttons on very narrow screens. */}
+          <span className="truncate whitespace-nowrap">Nature &amp; Culture GB</span>
         </Link>
 
         <ul className="hidden items-center gap-5 lg:flex">
@@ -84,7 +88,7 @@ export default function Navbar() {
           </GlareHover>
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex shrink-0 items-center gap-2 lg:hidden">
           <CartButton onClick={() => setCartOpen(true)} />
           <button
             type="button"
