@@ -6,7 +6,9 @@
  * free tier blocks outbound SMTP, so nodemailer → Gmail can't work there.
  */
 
-const ATTEMPTS = 3;
+// Google intermittently answers a healthy deployment with its HTML 404
+// page, in bursts of several seconds; spacing retries out rides one out.
+const RETRY_DELAYS_MS = [2_000, 6_000, 15_000];
 // Apps Script cold starts regularly take 15-20s.
 const TIMEOUT_MS = 45_000;
 
@@ -41,9 +43,10 @@ async function postOnce(url: string, payload: string): Promise<AttemptResult> {
       // The script ran and refused (bad secret, unknown action...) -- retrying won't help.
       return { ok: false, reason: body.error, retryable: false };
     }
+    const title = text.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim();
     return {
       ok: false,
-      reason: `unexpected response (HTTP ${res.status}) — check the web app URL and that it's deployed with access "Anyone"`,
+      reason: `unexpected response (HTTP ${res.status}${title ? `: "${title}"` : ""}) — if this persists, check the web app URL and that it's deployed with access "Anyone"`,
       retryable: true,
     };
   } catch (err) {
@@ -66,14 +69,12 @@ export async function callAppsScript(
 
   const payload = JSON.stringify({ secret, action, ...data });
   let last: AttemptResult = { ok: false, reason: "not attempted", retryable: true };
-  for (let attempt = 1; attempt <= ATTEMPTS; attempt += 1) {
+  for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt += 1) {
     last = await postOnce(url, payload);
     if (last.ok) return last;
-    if (!last.retryable) break;
-    if (attempt < ATTEMPTS) {
-      console.warn(`[apps-script] ${action}: attempt ${attempt} failed (${last.reason}); retrying…`);
-      await new Promise((r) => setTimeout(r, attempt * 2000));
-    }
+    if (!last.retryable || attempt === RETRY_DELAYS_MS.length) break;
+    console.warn(`[apps-script] ${action}: attempt ${attempt + 1} failed (${last.reason}); retrying…`);
+    await new Promise((r) => setTimeout(r, RETRY_DELAYS_MS[attempt]));
   }
   const reason = last.ok ? "unknown" : last.reason;
   console.error(`[apps-script] ${action} failed: ${reason}`);
