@@ -38,18 +38,48 @@ const cartItemSchema = z.discriminatedUnion("type", [
     guests: z.number().int().positive().max(50),
     estimatedPricePKR: z.number().optional(),
   }),
+  // The Plan My Trip wizard's custom itinerary (at most one per lead, see
+  // the refine below). `estimate` is the breakdown the traveller was shown.
+  z.object({
+    type: z.literal("tripPlan"),
+    startingCity: z.string().trim().min(1).max(100),
+    destinations: z
+      .array(
+        z.object({
+          id: z.string().min(1).max(100),
+          name: z.string().min(1).max(200),
+          region: z.string().max(100).nullable().optional(),
+        })
+      )
+      .min(1)
+      .max(50),
+    days: z.number().int().min(1).max(60),
+    travelers: z.number().int().min(1).max(50),
+    budgetPKR: z.number().int().nonnegative().max(1_000_000_000),
+    hotelCategory: z.enum(HOTEL_CATEGORIES),
+    transport: z.enum(TRANSPORT_MODES),
+    activities: z.array(z.string().trim().min(1).max(60)).max(30),
+    estimate: z.object({
+      hotel: z.number().nonnegative(),
+      transport: z.number().nonnegative(),
+      food: z.number().nonnegative(),
+      activities: z.number().nonnegative(),
+      entryFees: z.number().nonnegative(),
+      total: z.number().nonnegative(),
+      pricingAsOf: z.string().max(20),
+    }),
+  }),
 ]);
 
 /**
- * Field names deliberately match the frontend's TripBuilderForm state
- * (frontend/lib/trip-types.ts's TripState) so a "wiring pass" for that
- * wizard is a near-direct POST of that object -- it still doesn't call
- * this endpoint for real (see TripBuilderForm.tsx's console.log
- * submission), so all of those fields stay optional below.
+ * The trip cart checkout (frontend /trip-cart) is the only caller: it posts
+ * `cartItems` -- which can include one Plan My Trip "tripPlan" item -- plus
+ * contact details, `preferredDates`, `travelers` and `notes`.
  *
- * The cart checkout flow (Phase 8) is the endpoint's other, now more
- * common caller: it posts `cartItems` plus `preferredDates`/`notes`
- * instead of a fixed itinerary shape.
+ * The top-level wizard fields (startingCity ... activities) are what the
+ * wizard used to submit directly before it was folded into the cart. They
+ * stay accepted and stored so older leads keep rendering, but nothing sends
+ * them any more.
  */
 export const tripLeadSchema = z
   .object({
@@ -77,6 +107,10 @@ export const tripLeadSchema = z
   // a row with no actual trip content.
   .refine((data) => data.cartItems.length > 0 || data.destinationIds.length > 0, {
     message: "A trip request needs at least one cart item or destination",
+    path: ["cartItems"],
+  })
+  .refine((data) => data.cartItems.filter((item) => item.type === "tripPlan").length <= 1, {
+    message: "A trip request can include only one custom trip plan",
     path: ["cartItems"],
   });
 

@@ -1,64 +1,27 @@
 "use client";
 
-import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { TripState } from "@/lib/trip-types";
-import { Destination } from "@/lib/types";
-import type { TripPricing } from "@/lib/pricing";
+import type { TripState } from "@/lib/trip-types";
+import type { Destination } from "@/lib/types";
+import type { TripPlanBreakdown } from "@/lib/tripPlan/estimate";
 import EstimatedBadge from "@/components/shared/EstimatedBadge";
 
 interface CostCalculatorProps {
   trip: TripState;
-  destinations: Destination[];
-  pricing: TripPricing;
+  selectedDestinations: Destination[];
+  /** From estimateTripPlan(); computed by the wizard so this and the mobile bar always agree. */
+  breakdown: TripPlanBreakdown;
+  className?: string;
 }
 
 /**
- * Full Phase 2 logic: hotel rooms derive from traveler count, transport
- * splits into per-seat (Shared) vs per-vehicle-with-capacity (Private,
- * 4x4 Jeep), activities are priced individually rather than a flat fee,
- * and entry fees are driven by the actual selected destinations — all
- * against the admin-editable rates (/admin/pricing), recalculating on every
- * trip change.
+ * The live estimate beside the Plan My Trip wizard (and inside the mobile
+ * estimate sheet). Purely presentational: it re-renders on every change to
+ * the wizard's state because the wizard recomputes `breakdown` each render.
  */
-export default function CostCalculator({ trip, destinations, pricing }: CostCalculatorProps) {
+export default function CostCalculator({ trip, selectedDestinations, breakdown, className = "" }: CostCalculatorProps) {
   const t = useTranslations("tripBuilder.summary");
   const tc = useTranslations("common");
-
-  const selectedDestinations = useMemo(
-    () => destinations.filter((d) => trip.destinationIds.includes(d.id)),
-    [destinations, trip.destinationIds]
-  );
-
-  const breakdown = useMemo(() => {
-    const activityCost = new Map(pricing.activities.map((a) => [a.name, a.costPKR]));
-    const nights = Math.max(trip.days - 1, 0);
-    const rooms = Math.max(Math.ceil(trip.travelers / pricing.travelersPerRoom), 1);
-    const hotel = pricing.hotelPerNightPKR[trip.hotelCategory] * nights * rooms;
-
-    const transportRate = pricing.transportPerDayPKR[trip.transport];
-    const capacity =
-      pricing.transportVehicleCapacity[trip.transport as keyof TripPricing["transportVehicleCapacity"]];
-    const vehicles = capacity ? Math.max(Math.ceil(trip.travelers / capacity), 1) : trip.travelers;
-    const transport = capacity
-      ? transportRate * trip.days * vehicles
-      : transportRate * trip.days * trip.travelers;
-
-    const food = pricing.foodPerDayPersonPKR * trip.days * trip.travelers;
-
-    const activitiesCost =
-      trip.activities.reduce(
-        (sum, activity) => sum + (activityCost.get(activity) ?? 0),
-        0
-      ) * trip.travelers;
-
-    const entryFees = pricing.entryFeePerAttractionPKR * selectedDestinations.length * trip.travelers;
-
-    const total = hotel + transport + food + activitiesCost + entryFees;
-    const budgetDiff = trip.budgetPKR - total;
-
-    return { nights, rooms, transport, vehicles, hotel, food, activitiesCost, entryFees, total, budgetDiff };
-  }, [trip, selectedDestinations, pricing]);
 
   const rows: { key: string; value: number; detail?: string }[] = [
     {
@@ -69,23 +32,23 @@ export default function CostCalculator({ trip, destinations, pricing }: CostCalc
     {
       key: "transport",
       value: breakdown.transport,
-      detail:
-        trip.transport === "Shared"
-          ? t("transportDetailShared", { travelers: trip.travelers, days: trip.days })
-          : t("transportDetail", { vehicles: breakdown.vehicles, days: trip.days }),
+      detail: breakdown.perVehicle
+        ? t("transportDetail", { vehicles: breakdown.vehicles, days: trip.days })
+        : t("transportDetailShared", { travelers: trip.travelers, days: trip.days }),
     },
     { key: "food", value: breakdown.food },
-    { key: "activitiesCost", value: breakdown.activitiesCost },
+    { key: "activitiesCost", value: breakdown.activities },
     { key: "entryFees", value: breakdown.entryFees },
   ];
 
-  const overBudget = breakdown.budgetDiff < 0;
+  const budgetDiff = trip.budgetPKR - breakdown.total;
+  const overBudget = budgetDiff < 0;
 
   return (
-    <div className="rounded-card bg-white p-6 shadow-card">
-      <div className="flex items-center justify-between">
+    <div className={`rounded-card bg-white p-6 shadow-card ${className}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="font-display text-lg font-bold text-forest-900">{t("title")}</h3>
-        <EstimatedBadge lastUpdated={pricing.lastUpdated} />
+        <EstimatedBadge lastUpdated={breakdown.pricingAsOf} />
       </div>
 
       <p className="mt-1 text-xs uppercase tracking-wide text-forest-500">{t("breakdown")}</p>
@@ -131,8 +94,8 @@ export default function CostCalculator({ trip, destinations, pricing }: CostCalc
       >
         {t("yourBudget")}: {tc("currency")} {trip.budgetPKR.toLocaleString()} —{" "}
         {overBudget
-          ? t("overBudget", { amount: Math.abs(breakdown.budgetDiff).toLocaleString() })
-          : t("withinBudget", { amount: breakdown.budgetDiff.toLocaleString() })}
+          ? t("overBudget", { amount: Math.abs(budgetDiff).toLocaleString() })
+          : t("withinBudget", { amount: budgetDiff.toLocaleString() })}
       </div>
     </div>
   );

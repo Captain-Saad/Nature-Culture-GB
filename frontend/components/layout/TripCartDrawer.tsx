@@ -66,13 +66,13 @@ export default function TripCartDrawer({ open, onClose }: TripCartDrawerProps) {
             </div>
           ) : (
             <>
-              <CartGroupedList size="sm" />
+              <CartGroupedList size="sm" onNavigate={onClose} />
               <Link
-                href="/my-trip"
+                href="/trip-cart"
                 onClick={onClose}
                 className="mt-6 block rounded-full bg-orange-500 px-5 py-2.5 text-center text-sm font-bold text-white shadow-card transition-colors hover:bg-orange-600"
               >
-                {t("reviewTrip")}
+                {t("reviewCart")}
               </Link>
             </>
           )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useTripCart } from "@/lib/tripCart/TripCartContext";
@@ -10,6 +10,7 @@ import { useBusinessContact } from "@/lib/BusinessContactContext";
 import { telHref } from "@/lib/siteContent";
 import CartGroupedList from "./CartGroupedList";
 import GlareHover from "@/components/shared/GlareHover";
+import NumberField from "@/components/shared/NumberField";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -19,12 +20,20 @@ function EmptyState() {
     <div className="container-content flex flex-col items-center py-24 text-center">
       <p className="font-display text-2xl font-bold text-forest-900">{t("emptyTitle")}</p>
       <p className="mt-2 max-w-sm text-forest-600">{t("emptyBody")}</p>
-      <Link
-        href="/destinations"
-        className="mt-6 rounded-full bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-card transition-colors hover:bg-orange-600"
-      >
-        {t("browseDestinations")}
-      </Link>
+      <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
+        <Link
+          href="/destinations"
+          className="rounded-full bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-card transition-colors hover:bg-orange-600"
+        >
+          {t("browseDestinations")}
+        </Link>
+        <Link
+          href="/plan-my-trip"
+          className="rounded-full border-2 border-forest-700 px-6 py-2.5 text-sm font-bold text-forest-700 transition-colors hover:bg-forest-50"
+        >
+          {t("planPlanner")}
+        </Link>
+      </div>
     </div>
   );
 }
@@ -82,7 +91,7 @@ function ConfirmationScreen({ contact }: { contact: string }) {
 export default function MyTripClient() {
   const t = useTranslations("checkout");
   const tc = useTranslations("common");
-  const { items, clear, hydrated } = useTripCart();
+  const { items, clear, hydrated, tripPlan } = useTripCart();
 
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
@@ -95,7 +104,15 @@ export default function MyTripClient() {
   const [error, setError] = useState<string | null>(null);
   const [confirmedContact, setConfirmedContact] = useState("");
 
+  // A custom plan already knows its party size -- start from that once the cart has loaded.
+  const planTravelers = tripPlan?.travelers;
+  useEffect(() => {
+    if (planTravelers) setTravelers(planTravelers);
+  }, [planTravelers]);
+
   const total = estimateTotal(items);
+  // The plan's estimate includes accommodation, so a separately added room may double up.
+  const showOverlapNote = Boolean(tripPlan) && items.some((i) => i.type === "hotelRoom");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -161,6 +178,11 @@ export default function MyTripClient() {
                 {total.max !== total.min && `–${total.max.toLocaleString()}`}
               </p>
               <p className="mt-1 text-xs text-forest-500">{t("totalDisclaimer")}</p>
+              {showOverlapNote && (
+                <p role="note" className="mt-3 rounded-lg bg-orange-50 px-3 py-2 text-xs font-semibold text-orange-800">
+                  {t("overlapNote")}
+                </p>
+              )}
             </div>
           )}
 
@@ -224,13 +246,12 @@ export default function MyTripClient() {
                   <label htmlFor="trip-travelers" className="text-sm font-semibold text-forest-800">
                     {t("travelers")}
                   </label>
-                  <input
+                  <NumberField
                     id="trip-travelers"
-                    type="number"
                     min={1}
                     max={50}
                     value={travelers}
-                    onChange={(e) => setTravelers(Math.max(1, Number(e.target.value)))}
+                    onChange={setTravelers}
                     className="mt-2 w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm outline-none focus:border-forest-500"
                   />
                 </div>

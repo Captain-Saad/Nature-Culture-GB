@@ -17,12 +17,17 @@ function CartButton({ onClick, className = "" }: { onClick: () => void; classNam
     <button
       type="button"
       onClick={onClick}
-      aria-label={t("title")}
-      className={`relative flex h-10 w-10 items-center justify-center rounded-full border border-forest-200 text-forest-800 hover:bg-forest-50 ${className}`}
+      aria-label={t("open")}
+      title={t("title")}
+      className={`relative flex h-10 min-w-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-forest-200 px-2.5 text-forest-800 hover:bg-forest-50 2xl:px-3.5 ${className}`}
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.75">
         <path d="M3 4h2l.4 2M7 13h10l3-8H6.4M7 13L5.4 6M7 13l-1.5 6h11M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
+      {/* Named on wide screens so it's clearly distinct from the "Plan My Trip" button beside it. */}
+      <span aria-hidden className="hidden text-sm font-semibold 2xl:inline">
+        {t("title")}
+      </span>
       {count > 0 && (
         <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[11px] font-bold text-white rtl:-left-1 rtl:right-auto">
           {count}
@@ -72,7 +77,7 @@ export default function Navbar() {
           <GlareHover className="rounded-full">
             <Link
               href="/plan-my-trip"
-              className="block rounded-full bg-orange-500 px-5 py-2 text-sm font-bold text-white shadow-card transition-colors hover:bg-orange-600"
+              className="block whitespace-nowrap rounded-full bg-orange-500 px-5 py-2 text-sm font-bold text-white shadow-card transition-colors hover:bg-orange-600"
             >
               {t("planMyTrip")}
             </Link>

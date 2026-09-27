@@ -16,16 +16,26 @@ const STATUS_STYLES: Record<string, string> = {
   READ: "bg-forest-100 text-forest-800",
 };
 
+/** "Custom trip plan + 2 more items" / "3 items in trip cart" for the collapsed lead row. */
+function cartSummary(lead: AdminTripLead) {
+  const others = lead.cartItems.filter((i) => i.type !== "tripPlan").length;
+  const plural = (n: number) => `${n} item${n === 1 ? "" : "s"}`;
+  if (lead.cartItems.some((i) => i.type === "tripPlan")) {
+    return others > 0 ? `Custom trip plan + ${plural(others)}` : "Custom trip plan";
+  }
+  return `${plural(others)} in trip cart`;
+}
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString();
 }
 
 /**
- * A TripLead can come from either the Plan-My-Trip wizard (startingCity/
- * days/travelers/destinationIds/activities, cartItems empty) or the cart
- * checkout flow (cartItems populated, those wizard fields null) -- shows
- * whichever one actually has data instead of a fixed set of fields that's
- * half blank either way.
+ * Leads now all come from the trip cart checkout: cartItems, which may
+ * include one Plan My Trip "tripPlan" item. Older leads sent straight from
+ * the wizard have the top-level wizard fields (startingCity/days/
+ * destinationIds/...) instead and still render below -- shows whichever one
+ * actually has data instead of a fixed set of fields that's half blank.
  */
 function LeadDetail({
   lead,
@@ -103,6 +113,57 @@ function LeadDetail({
                     )}
                   </>
                 )}
+                {item.type === "tripPlan" && (
+                  <div className="space-y-2">
+                    <p>
+                      <span className="font-semibold text-forest-900">Custom trip plan</span>{" "}
+                      <span className="text-forest-500">— from Plan My Trip</span>
+                    </p>
+                    <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-2">
+                      <div className="sm:col-span-2">
+                        <dt className="inline font-semibold text-forest-700">Destinations: </dt>
+                        <dd className="inline">
+                          {item.destinations.map((d) => (d.region ? `${d.name} (${d.region})` : d.name)).join(", ")}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="inline font-semibold text-forest-700">From: </dt>
+                        <dd className="inline">{item.startingCity}</dd>
+                      </div>
+                      <div>
+                        <dt className="inline font-semibold text-forest-700">Length: </dt>
+                        <dd className="inline">
+                          {item.days} day{item.days === 1 ? "" : "s"}, {item.travelers} traveller
+                          {item.travelers === 1 ? "" : "s"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="inline font-semibold text-forest-700">Hotel / Transport: </dt>
+                        <dd className="inline">
+                          {item.hotelCategory} / {item.transport}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="inline font-semibold text-forest-700">Budget: </dt>
+                        <dd className="inline">PKR {item.budgetPKR.toLocaleString()}</dd>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <dt className="inline font-semibold text-forest-700">Activities: </dt>
+                        <dd className="inline">{item.activities.length > 0 ? item.activities.join(", ") : "None"}</dd>
+                      </div>
+                    </dl>
+                    <p className="text-sm text-forest-700">
+                      <span className="font-semibold">Estimate shown: PKR {item.estimate.total.toLocaleString()}</span>
+                      <span className="text-forest-500">
+                        {" "}
+                        (hotel {item.estimate.hotel.toLocaleString()} · transport{" "}
+                        {item.estimate.transport.toLocaleString()} · food {item.estimate.food.toLocaleString()} ·
+                        activities {item.estimate.activities.toLocaleString()} · entry fees{" "}
+                        {item.estimate.entryFees.toLocaleString()} · rates as of {item.estimate.pricingAsOf})
+                      </span>
+                    </p>
+                  </div>
+                )}
                 {item.type === "hotelRoom" && (
                   <>
                     <span className="font-semibold text-forest-900">
@@ -128,7 +189,7 @@ function LeadDetail({
 
       {hasWizardData && (
         <div>
-          {hasCartData && <p className="mb-2 text-xs font-semibold uppercase text-forest-500">Plan My Trip wizard</p>}
+          <p className="mb-2 text-xs font-semibold uppercase text-forest-500">Plan My Trip wizard (older lead)</p>
           <dl className="grid gap-3 sm:grid-cols-2">
             <div>
               <dt className="text-xs font-semibold uppercase text-forest-500">Starting City</dt>
@@ -354,9 +415,7 @@ export default function LeadsManager() {
                     <p className="mt-1 text-sm text-forest-600">
                       {isLead ? lead.contact : message.email}
                       {!isLead && message.subject ? ` — ${message.subject}` : ""}
-                      {isLead && lead.cartItems.length > 0
-                        ? ` · ${lead.cartItems.length} item${lead.cartItems.length === 1 ? "" : "s"} in trip cart`
-                        : ""}
+                      {isLead && lead.cartItems.length > 0 ? ` · ${cartSummary(lead)}` : ""}
                     </p>
                     <p className="mt-1 text-xs text-forest-500">{formatDate(row.createdAt)}</p>
                   </div>

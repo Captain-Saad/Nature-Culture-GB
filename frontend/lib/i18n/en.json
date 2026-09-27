@@ -40,8 +40,6 @@
     "bookNow": "Book Now",
     "callNow": "Call Now",
     "whatsapp": "WhatsApp",
-    "addToMyTrip": "Add to My Trip",
-    "addedToTrip": "Added to your trip",
     "seeAll": "See All",
     "close": "Close",
     "submit": "Submit",
@@ -71,7 +69,9 @@
     "requiredField": "This field is required",
     "optional": "optional",
     "sending": "Sending…",
-    "nothingYet": "Nothing here yet — please check back soon."
+    "nothingYet": "Nothing here yet — please check back soon.",
+    "addToTripCart": "Add to Trip Cart",
+    "inTripCart": "In your Trip Cart"
   },
   "home": {
     "hero": {
@@ -232,17 +232,13 @@
       "budget": "Budget (PKR)",
       "hotelCategory": "Hotel Category",
       "transport": "Transport",
-      "activitiesLabel": "Activities",
-      "name": "Your Name",
-      "phone": "Phone / WhatsApp",
-      "email": "Email",
-      "notes": "Anything else we should know?"
+      "activitiesLabel": "Activities"
     },
     "buttons": {
       "next": "Next",
       "back": "Back",
-      "finish": "Review Estimate",
-      "submit": "Send My Trip Request"
+      "addToCart": "Add to Trip Cart",
+      "updateCart": "Update Plan in Trip Cart"
     },
     "summary": {
       "title": "Your Trip Estimate",
@@ -263,11 +259,19 @@
       "includedActivities": "Activities included",
       "noneSelectedYet": "None selected yet"
     },
-    "contactHeading": "Your contact details",
-    "contactHint": "We'll use these to send you a detailed plan and final quote.",
-    "needDestination": "Pick at least one destination (step 2) before sending your request.",
-    "success": "Your trip request has been sent! Our team will contact you shortly to finalize your plan.",
-    "planAnother": "Plan another trip"
+    "planAnother": "Start a new plan",
+    "validation": {
+      "origin": "Choose a starting city to continue.",
+      "destinations": "Pick at least one destination to continue."
+    },
+    "reviewIntro": "Check your plan, then add it to your trip cart. You'll send it to us from there, along with anything else you've added — no payment needed.",
+    "reviewDuration": "{days} days · {travelers} travelers",
+    "replacesExisting": "This will replace the custom plan already in your trip cart.",
+    "addedTitle": "Your custom plan is in your trip cart",
+    "addedBody": "Review it alongside anything else you've added, then send us your request from the trip cart.",
+    "goToCart": "Go to Trip Cart",
+    "showBreakdown": "Details",
+    "hideBreakdown": "Hide"
   },
   "weather": {
     "pageTitle": "Weather",
@@ -417,9 +421,9 @@
     "whatsappAction": "Message on WhatsApp"
   },
   "cart": {
-    "title": "My Trip",
-    "emptyTitle": "Your trip is empty",
-    "emptyBody": "Browse destinations and packages, or a hotel room, and add them to your trip.",
+    "title": "Trip Cart",
+    "emptyTitle": "Your trip cart is empty",
+    "emptyBody": "Add destinations, packages or hotel rooms — or build a custom plan with Plan My Trip.",
     "browseDestinations": "Browse Destinations",
     "remove": "Remove",
     "checkIn": "Check-in",
@@ -428,13 +432,18 @@
     "destinations": "Destinations",
     "packages": "Packages",
     "hotelRooms": "Hotels & Rooms",
-    "reviewTrip": "Review My Trip"
+    "reviewCart": "Review Trip Cart",
+    "open": "Open trip cart",
+    "tripPlan": "Custom Trip Plan",
+    "planFrom": "From {city} · {days} days · {travelers} travelers",
+    "planStay": "{hotel} hotels · {transport} transport",
+    "editPlan": "Edit plan"
   },
   "checkout": {
-    "pageTitle": "My Trip",
+    "pageTitle": "Trip Cart",
     "pageSubtitle": "Review what you've added, then send us your trip request — no payment needed.",
-    "emptyTitle": "Your trip is empty",
-    "emptyBody": "Browse destinations and packages, or a hotel room, to start building your trip.",
+    "emptyTitle": "Your trip cart is empty",
+    "emptyBody": "Add destinations, packages or hotel rooms — or build a custom plan with Plan My Trip.",
     "browseDestinations": "Browse Destinations",
     "estimatedTotal": "Estimated total",
     "totalDisclaimer": "This is a rough estimate — we'll confirm final pricing when we contact you.",
@@ -451,6 +460,8 @@
     "confirmTitle": "Thanks — we've received your trip request!",
     "confirmBody": "We'll contact you on {contact} within 24 hours.",
     "confirmCallToAction": "Want to talk sooner? Reach us directly:",
-    "backHome": "Back to Home"
+    "backHome": "Back to Home",
+    "planPlanner": "Plan My Trip",
+    "overlapNote": "Your custom plan already includes an accommodation estimate — check for overlap with any hotel rooms also in your cart."
   }
 }

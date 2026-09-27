@@ -192,7 +192,7 @@ export default function RoomDetailModal({
                 : "bg-orange-500 text-white hover:bg-orange-600"
             }`}
           >
-            {added ? `✓ ${t("common.addedToTrip")}` : t("common.addToMyTrip")}
+            {added ? `✓ ${t("common.inTripCart")}` : t("common.addToTripCart")}
           </button>
         </GlareHover>
       </div>

@@ -1,13 +1,7 @@
-import type { Metadata } from "next";
-import MyTripClient from "@/components/tripCart/MyTripClient";
+import { redirect } from "next/navigation";
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: "My Trip",
-    description: "Review your trip and send us a request — no payment, just a quick way to reach us.",
-  };
-}
-
-export default function MyTripPage() {
-  return <MyTripClient />;
+/** The trip cart moved to /trip-cart; keeps old links and bookmarks working. */
+export default async function MyTripRedirect({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  redirect(`/${locale}/trip-cart`);
 }

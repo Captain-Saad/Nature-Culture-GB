@@ -14,6 +14,16 @@ function formatCartItem(item: TripLeadInput["cartItems"][number]): string {
       return `  - Package: ${item.name} (${item.durationDays} days)`;
     case "hotelRoom":
       return `  - Hotel room: ${item.hotelName} — ${item.roomType} (check-in ${item.checkIn}, ${item.nights} night${item.nights === 1 ? "" : "s"}, ${item.guests} guest${item.guests === 1 ? "" : "s"})`;
+    case "tripPlan":
+      return [
+        `  - Custom trip plan (Plan My Trip): ${item.destinations.map((d) => d.name).join(", ")}`,
+        `      From ${item.startingCity} · ${item.days} days · ${item.travelers} travelers`,
+        `      ${item.hotelCategory} hotels · ${item.transport} transport · budget PKR ${item.budgetPKR.toLocaleString()}`,
+        item.activities.length ? `      Activities: ${item.activities.join(", ")}` : undefined,
+        `      Estimate shown: PKR ${item.estimate.total.toLocaleString()} (hotel ${item.estimate.hotel.toLocaleString()}, transport ${item.estimate.transport.toLocaleString()}, food ${item.estimate.food.toLocaleString()}, activities ${item.estimate.activities.toLocaleString()}, entry fees ${item.estimate.entryFees.toLocaleString()}; rates as of ${item.estimate.pricingAsOf})`,
+      ]
+        .filter(Boolean)
+        .join("\n");
   }
 }
 

@@ -2,9 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import type { CartItem } from "@/lib/tripCart/types";
+import type { CartItem, CartTripPlanItem } from "@/lib/tripCart/types";
 import { resolveMediaUrl } from "@/lib/utils/media";
 import { SafeImg } from "@/components/shared/SafeImage";
+import NumberField from "@/components/shared/NumberField";
 
 /**
  * A stored reference can 404 (e.g. the file was removed after this item was
@@ -22,12 +23,13 @@ function ItemThumb({ image }: { image: string | null }) {
 }
 
 interface CartItemRowProps {
-  item: CartItem;
+  /** The trip plan has its own row (TripPlanRow). */
+  item: Exclude<CartItem, CartTripPlanItem>;
   onRemove: () => void;
   onNightsChange?: (nights: number) => void;
 }
 
-/** One cart entry — used by both the navbar drawer and the /my-trip page, so editing nights behaves identically in both places. */
+/** One cart entry — used by both the navbar drawer and the /trip-cart page, so editing nights behaves identically in both places. */
 export default function CartItemRow({ item, onRemove, onNightsChange }: CartItemRowProps) {
   const t = useTranslations("cart");
   const tc = useTranslations("common");
@@ -83,12 +85,11 @@ export default function CartItemRow({ item, onRemove, onNightsChange }: CartItem
               </span>
               <span className="flex items-center gap-1">
                 {t("nights")}:
-                <input
-                  type="number"
+                <NumberField
                   min={1}
                   max={60}
                   value={item.nights}
-                  onChange={(e) => onNightsChange?.(Math.max(1, Number(e.target.value)))}
+                  onChange={(nights) => onNightsChange?.(nights)}
                   className="w-12 rounded border border-cream-300 px-1 py-0.5 text-center text-xs"
                   aria-label={t("nights")}
                 />

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { CartDestinationItem, CartHotelRoomItem, CartItem, CartPackageItem } from "./types";
+import type { CartDestinationItem, CartHotelRoomItem, CartItem, CartPackageItem, CartTripPlanItem } from "./types";
 
 const STORAGE_KEY = "ncgb_trip_cart_v1";
 
@@ -26,7 +26,7 @@ interface TripCartContextValue {
   count: number;
   /** False until the localStorage read on mount completes. Pages that
    * decide what to render based on whether the cart is empty (e.g.
-   * /my-trip) should wait for this, otherwise they flash an "empty"
+   * /trip-cart) should wait for this, otherwise they flash an "empty"
    * state before the real cart loads. */
   hydrated: boolean;
   addDestination: (item: Omit<CartDestinationItem, "cartItemId" | "type">) => void;
@@ -39,6 +39,10 @@ interface TripCartContextValue {
   ) => void;
   hasDestination: (id: string) => boolean;
   hasPackage: (id: string) => boolean;
+  /** The Plan My Trip custom itinerary in the cart, if any (at most one). */
+  tripPlan: CartTripPlanItem | null;
+  /** Adds the plan, replacing any plan already in the cart (keeps its position). */
+  setTripPlan: (plan: Omit<CartTripPlanItem, "cartItemId" | "type">) => void;
   clear: () => void;
 }
 
@@ -96,6 +100,22 @@ export function TripCartProvider({ children }: { children: ReactNode }) {
   const hasDestination = useCallback((id: string) => items.some((i) => i.cartItemId === `destination:${id}`), [items]);
   const hasPackage = useCallback((id: string) => items.some((i) => i.cartItemId === `package:${id}`), [items]);
 
+  const tripPlan = useMemo(
+    () => (items.find((i) => i.type === "tripPlan") as CartTripPlanItem | undefined) ?? null,
+    [items]
+  );
+
+  const setTripPlan = useCallback((plan: Omit<CartTripPlanItem, "cartItemId" | "type">) => {
+    setItems((prev) => {
+      const item: CartTripPlanItem = { ...plan, cartItemId: "tripPlan", type: "tripPlan" };
+      const index = prev.findIndex((i) => i.type === "tripPlan");
+      if (index === -1) return [item, ...prev];
+      const next = [...prev];
+      next[index] = item;
+      return next;
+    });
+  }, []);
+
   const clear = useCallback(() => setItems([]), []);
 
   const value = useMemo(
@@ -110,6 +130,8 @@ export function TripCartProvider({ children }: { children: ReactNode }) {
       updateHotelRoom,
       hasDestination,
       hasPackage,
+      tripPlan,
+      setTripPlan,
       clear,
     }),
     [
@@ -122,6 +144,8 @@ export function TripCartProvider({ children }: { children: ReactNode }) {
       updateHotelRoom,
       hasDestination,
       hasPackage,
+      tripPlan,
+      setTripPlan,
       clear,
     ]
   );

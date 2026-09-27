@@ -39,7 +39,7 @@ export default function AddToTripButton(props: AddToTripButtonProps) {
             : "bg-orange-500 text-white hover:bg-orange-600"
         }`}
       >
-        {added ? `✓ ${t("addedToTrip")}` : t("addToMyTrip")}
+        {added ? `✓ ${t("inTripCart")}` : t("addToTripCart")}
       </button>
     </GlareHover>
   );
