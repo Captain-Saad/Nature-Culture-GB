@@ -3,6 +3,10 @@ import nodemailer from "nodemailer";
 interface NotificationEmail {
   subject: string;
   text: string;
+  /** Optional rich version; mail clients show this and fall back to `text`. */
+  html?: string;
+  /** e.g. the client's email, so "Reply" in Gmail goes straight to them. */
+  replyTo?: string;
 }
 
 let transporter: ReturnType<typeof nodemailer.createTransport> | null | undefined;
@@ -42,6 +46,8 @@ function getTransporter() {
 export async function sendNotificationEmail({
   subject,
   text,
+  html,
+  replyTo,
 }: NotificationEmail): Promise<{ sent: boolean; reason?: string }> {
   const to = process.env.NOTIFICATION_EMAIL_TO;
   const client = getTransporter();
@@ -53,10 +59,12 @@ export async function sendNotificationEmail({
 
   try {
     await client.sendMail({
-      from: process.env.SMTP_USER,
+      from: `"Nature & Culture GB Website" <${process.env.SMTP_USER}>`,
       to,
       subject,
       text,
+      html,
+      replyTo,
     });
     return { sent: true };
   } catch (err) {

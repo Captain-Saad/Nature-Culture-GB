@@ -250,6 +250,9 @@ export default function LeadsManager() {
   const [error, setError] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  /** Outcome of the last Close (booking email) or sheet sync, shown above the list. */
+  const [notice, setNotice] = useState<{ tone: "ok" | "warn"; text: string } | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
   const load = useCallback(async () => {
     setError(null);
@@ -278,17 +281,41 @@ export default function LeadsManager() {
 
   async function updateLeadStatus(lead: AdminTripLead, status: string) {
     setSavingId(lead.id);
-    const { error: err } = await request(`leads/${lead.id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    });
+    setNotice(null);
+    const { data, error: err } = await request<{ bookingEmail?: { sent: boolean; reason?: string } }>(
+      `leads/${lead.id}`,
+      { method: "PATCH", body: JSON.stringify({ status }) }
+    );
     setSavingId(null);
     if (err) {
       setError(err);
       return;
     }
+    // Closing a lead emails its booking details to the business inbox (backend).
+    if (data?.bookingEmail) {
+      setNotice(
+        data.bookingEmail.sent
+          ? { tone: "ok", text: `Booking details for ${lead.name} were emailed to your inbox.` }
+          : {
+              tone: "warn",
+              text: `${lead.name} is marked Closed, but the booking email wasn't sent (${data.bookingEmail.reason ?? "unknown reason"}).`,
+            }
+      );
+    }
     setLeads((prev) =>
       prev?.map((l) => (l.id === lead.id ? { ...l, status: status as AdminTripLead["status"] } : l)) ?? null
+    );
+  }
+
+  async function syncSheet() {
+    setSyncing(true);
+    setNotice(null);
+    const { data, error: err } = await request<{ synced: number }>("leads/sync-sheet", { method: "POST" });
+    setSyncing(false);
+    setNotice(
+      err
+        ? { tone: "warn", text: err }
+        : { tone: "ok", text: `Google Sheet is up to date — ${data?.synced ?? 0} lead(s) synced.` }
     );
   }
 
@@ -352,7 +379,18 @@ export default function LeadsManager() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {tab === "leads" && (
+            <button
+              type="button"
+              onClick={syncSheet}
+              disabled={syncing}
+              title="Re-send every trip lead to the Google Sheet (safe to run any time)"
+              className="rounded-lg border-2 border-forest-700 px-3 py-1.5 text-sm font-bold text-forest-700 hover:bg-forest-50 disabled:opacity-60"
+            >
+              {syncing ? "Syncing…" : "Sync all to Google Sheet"}
+            </button>
+          )}
           <label className="text-xs font-semibold uppercase tracking-wide text-forest-500">Status</label>
           <select
             value={statusFilter}
@@ -368,6 +406,17 @@ export default function LeadsManager() {
           </select>
         </div>
       </div>
+
+      {notice && (
+        <p
+          role="status"
+          className={`mb-4 rounded-lg px-4 py-3 text-sm font-semibold ${
+            notice.tone === "ok" ? "bg-forest-100 text-forest-800" : "bg-orange-50 text-orange-800"
+          }`}
+        >
+          {notice.text}
+        </p>
+      )}
 
       {error && (
         <div className="mb-4 rounded-lg bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-800">
